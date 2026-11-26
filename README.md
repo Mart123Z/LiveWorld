@@ -103,23 +103,38 @@ Gestion courante (⚙ **Réglages** → **Gérer les comptes**) :
 
 ## 4. Veille automatique (recommandé)
 
-Une **tâche planifiée Claude** (incluse dans l'abonnement, elle consomme votre quota Claude) fait la veille chaque matin vers 6 h 30, sans intervention :
-1. elle récupère le dépôt et reconstitue l'état de la base à partir des veilles précédentes ;
-2. elle fait les recherches web et produit un lot `liveworld.batch/v1` ;
-3. elle le valide (`tools/inbox.mjs add`) et le dépose dans `inbox/` sur la branche **`claude/liveworld-inbox`** du dépôt.
+Une **tâche planifiée Claude** (incluse dans l'abonnement, elle consomme votre quota Claude) fait la veille chaque matin vers 6 h 30, sans intervention. Elle suit [`tools/VEILLE_AUTOMATIQUE.md`](tools/VEILLE_AUTOMATIQUE.md) :
+1. elle reconstitue l'état de la base à partir des veilles précédentes ;
+2. elle fait les recherches web et produit un lot ;
+3. elle le valide et le dépose dans le dépôt **privé** `Mart123Z/LiveWorld-data` (branche `claude/liveworld-inbox`).
 
-**Le site lit directement ce dépôt, pour tout le monde**, à l'ouverture, au retour sur l'onglet et toutes les 15 minutes. Il n'y a aucun bouton à utiliser.
-- **Admin et éditeurs** : les nouvelles veilles sont en plus enregistrées dans la base (Firebase), avec la même fusion que l'import manuel : rien n'est écrasé.
-- **Lecteurs** : les veilles sont appliquées à l'affichage seulement.
+Le site lit ce dépôt privé, **uniquement une fois connecté**, à l'ouverture, au retour sur l'onglet et toutes les 15 minutes. Il n'y a aucun bouton à utiliser.
+- **Admin et éditeurs** : les nouvelles veilles sont aussi enregistrées dans Firebase.
+- **Lecteurs** : les veilles sont seulement affichées.
 
-L'icône 🔔 (*Journal des veilles*) montre la dernière veille et propose **Vérifier maintenant**.
+### 4.1 Mise en place (une seule fois, 10 min)
+
+1. **Créer le dépôt privé** sur GitHub : **New repository** → nom `LiveWorld-data` → **Private** → cochez *Add a README file* → **Create**.
+2. **Créer un jeton en lecture seule** : GitHub → photo de profil → **Settings** → **Developer settings** → **Personal access tokens** → **Fine-grained tokens** → **Generate new token**.
+   - Nom : `LiveWorld lecture`.
+   - Expiration : la plus longue proposée.
+   - *Repository access* : **Only select repositories** → `LiveWorld-data`.
+   - *Permissions* → *Repository permissions* → **Contents : Read-only**.
+   - **Generate token**, puis copiez le jeton (`github_pat_…`).
+3. Sur le site, connecté en **Admin** : ⚙ **Réglages** → *Veille automatique (dépôt privé)* → collez le jeton → **Tester et enregistrer**. Le site refuse un dépôt public.
+4. Republiez les **règles Firestore** à partir de [`firestore.rules`](firestore.rules) : elles protègent ce jeton, lisible seulement par les comptes connectés.
+5. Vérifiez que la tâche planifiée Claude a accès à `LiveWorld-data`. Si sa première exécution signale un problème d'accès, autorisez ce dépôt dans les réglages GitHub de Claude.
+
+L'icône 🔔 (*Journal des veilles*) montre l'état de la veille et propose **Vérifier maintenant**. Quand le jeton expire, le journal l'indique : créez-en un nouveau et recollez-le dans les Réglages.
 
 - **Lancer une veille tout de suite** : https://claude.ai/code/routines → « Veille LiveWorld quotidienne » → **Exécuter maintenant**. Elle apparaît sur le site 10 à 20 minutes plus tard.
-- **Changer l'heure ou la fréquence** : même page.
-- **Modifier la procédure** : fichier [`tools/VEILLE_AUTOMATIQUE.md`](tools/VEILLE_AUTOMATIQUE.md).
-- **Bon à savoir** :
-  - La veille automatique ne voit que ses propres veilles : les liens ajoutés à la main, les suppressions et les imports manuels ne lui sont pas connus.
-  - Les fichiers de veille sont publics, comme le reste du dépôt.
+- **Bon à savoir** : la veille automatique ne voit que ses propres veilles. Les liens ajoutés à la main, les suppressions et les imports manuels ne lui sont pas connus.
+
+## 5 bis. Confidentialité
+
+- **Le site** (code, page de connexion, modèles pour Claude) est public : il ne contient aucune donnée.
+- **Les données** sont accessibles uniquement après connexion. Firebase protège les événements, les briefings et les comptes. Le dépôt privé `LiveWorld-data` protège les veilles brutes de Claude.
+- **Seul l'Admin crée les comptes** : bouton **Comptes** dans l'en-tête, visible uniquement par l'Admin. Après la création, **Partager…** envoie l'adresse du site, l'identifiant et le mot de passe provisoire par Messages, WhatsApp, e-mail…
 
 ## 4 bis. La routine manuelle (si besoin)
 

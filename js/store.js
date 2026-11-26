@@ -1,5 +1,5 @@
 // Stockage : mode local (IndexedDB du navigateur) ou Firebase (Firestore + cache local)
-import { docId } from './util.js?v=202611261032';
+import { docId } from './util.js?v=202611261039';
 
 export const COLLECTIONS = ['events', 'links', 'briefings', 'markets', 'batches'];
 export const emptyDb = () => Object.fromEntries(COLLECTIONS.map(c => [c, {}]));
@@ -39,6 +39,8 @@ export class LocalStore {
   async load() { const db = (await idb.get('db')) || emptyDb(); for (const c of COLLECTIONS) db[c] ||= {}; this.db = db; return db; }
   async save(changes) { applyChanges(this.db, changes); await idb.set('db', this.db); }
   async replaceAll(db) { this.db = db; await idb.set('db', db); }
+  async getConfig(name) { return (await idb.get('config:' + name)) || null; }
+  async setConfig(name, data) { await idb.set('config:' + name, data); }
   static async peekLocal() { return (await idb.get('db')) || emptyDb(); }
 }
 
@@ -59,7 +61,7 @@ export class FirebaseStore {
   get role() { return this.profile?.role || null; }
 
   async init(onUser) {
-    this.fb = await import('../vendor/firebase.js?v=202611261032');
+    this.fb = await import('../vendor/firebase.js?v=202611261039');
     const { initializeApp, getAuth, getFirestore, onAuthStateChanged, setPersistence, browserLocalPersistence } = this.fb;
     this.app = initializeApp(this.config);
     this.auth = getAuth(this.app);
@@ -110,6 +112,9 @@ export class FirebaseStore {
       return cred.user.uid;
     } finally { await deleteApp(sec).catch(() => {}); }
   }
+  // Réglages partagés (config/{name}) : lisibles par les comptes actifs, modifiables par l'Admin
+  async getConfig(name) { const d = await this.fb.getDoc(this.fb.doc(this.fs, 'config', name)); return d.exists() ? d.data() : null; }
+  async setConfig(name, data) { await this.fb.setDoc(this.fb.doc(this.fs, 'config', name), data); }
   async updateUser(uid, patch) { await this.fb.updateDoc(this.fb.doc(this.fs, 'users', uid), patch); }
   async deleteProfile(uid) { await this.fb.deleteDoc(this.fb.doc(this.fs, 'users', uid)); }
   async changePassword(current, next) {

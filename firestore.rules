@@ -35,6 +35,12 @@ service cloud.firestore {
       allow delete: if isAdmin() && request.auth.uid != uid;
     }
 
+    // Réglages partagés (ex. accès en lecture au dépôt privé des veilles)
+    match /config/{name} {
+      allow read: if isMember();
+      allow write: if isAdmin();
+    }
+
     // Base partagée LiveWorld
     match /spaces/main/{col}/{id} {
       allow read: if isMember();

@@ -67,11 +67,14 @@ export const EXCHANGES = [
 
 export const WINDOWS = [[1, '1 j'], [7, '7 j'], [30, '30 j'], [90, '90 j'], ['all', 'Tout']];
 
-// Veille automatique : la tâche planifiée Claude dépose ses lots dans inbox/ sur cette branche du dépôt.
-// Le site lit aussi inbox/ sur le site lui-même (si un lot est poussé sur main).
+// Veille automatique : la tâche planifiée Claude dépose ses lots dans un dépôt GitHub PRIVÉ.
+// Le site les lit via l'API GitHub avec un jeton en lecture seule, enregistré par l'Admin (Réglages → Veille automatique)
+// dans Firestore (config/github), lisible uniquement par les comptes connectés.
 export const INBOX = {
-  raw: 'https://raw.githubusercontent.com/Mart123Z/LiveWorld/refs/heads/claude/liveworld-inbox/inbox/',
-  local: 'inbox/',
+  owner: 'Mart123Z',
+  repo: 'LiveWorld-data',
+  branch: 'claude/liveworld-inbox',
+  path: 'inbox/',
   schedule: 'chaque jour vers 6 h 30 (heure de Paris)',
   routinesUrl: 'https://claude.ai/code/routines',
 };

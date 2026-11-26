@@ -1,12 +1,12 @@
 // LiveWorld — application principale
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS, INBOX } from './config.js?v=202611261032';
-import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611261032';
-import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611261032';
-import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611261032';
-import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611261032';
-import { WorldMap } from './map.js?v=202611261032';
-import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611261032';
-import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611261032';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS, INBOX } from './config.js?v=202611261039';
+import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611261039';
+import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611261039';
+import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611261039';
+import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611261039';
+import { WorldMap } from './map.js?v=202611261039';
+import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611261039';
+import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611261039';
 
 const pref = { get(k, d) { try { const v = localStorage.getItem('lw:' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('lw:' + k, JSON.stringify(v)); } catch {} } };
 const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
@@ -53,6 +53,7 @@ function renderHeader() {
   $('#themeChips').innerHTML = `<button class="chip" data-th="" aria-pressed="${!S.themes.size}">Tous les thèmes</button>` + THEMES.filter(([id]) => counts[id] || S.themes.has(id)).map(([id, l]) => `<button class="chip" data-th="${id}" aria-pressed="${S.themes.has(id)}">${esc(l)}</button>`).join('');
   $$('#themeChips [data-th]').forEach(b => b.onclick = () => toggleTheme(b.dataset.th));
   $('#importBtn').hidden = !canWrite();
+  $('#accountsBtn').hidden = !isAdmin();
   const unseen = Object.values(S.db.batches).filter(b => ts(b.imported_at) > pref.get('seenBatches', 0)).length;
   $('#badge').textContent = unseen || '';
 }
@@ -344,13 +345,22 @@ function openLinkPicker(e) {
 // Tout le monde voit les veilles déposées sur GitHub dès l'ouverture du site.
 // Admin et éditeurs les enregistrent en plus dans la base (Firebase ou navigateur) ; pour un lecteur, elles sont
 // appliquées en mémoire uniquement (le lecteur n'a pas le droit d'écrire).
-let syncing = false, lastCheck = 0, inboxInfo = { last: null, count: 0, error: false };
+let syncing = false, lastCheck = 0, inboxInfo = { last: null, count: 0, state: 'unknown' };
+const ghUrl = (gh, file) => `https://api.github.com/repos/${encodeURIComponent(gh.owner)}/${encodeURIComponent(gh.repo)}/contents/${gh.path || 'inbox/'}${file}?ref=${encodeURIComponent(gh.branch)}&t=${Date.now()}`;
+const ghGet = (gh, file) => fetch(ghUrl(gh, file), { cache: 'no-store', headers: { Authorization: `Bearer ${gh.token}`, Accept: 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28' } });
+const ghConf = () => S.gh?.token ? { ...INBOX, ...S.gh } : null;
 async function fetchInboxIndex() {
-  let ok = false;
-  const get = async base => { try { const r = await fetch(base + 'index.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return []; ok = true; const j = await r.json(); return (j.batches || []).map(b => ({ ...b, base })); } catch { return []; } };
-  const all = [...await get(INBOX.raw), ...await get(INBOX.local)];
-  inboxInfo.error = !ok;
-  const seen = new Set(); return all.filter(b => b.batch_id && b.file && !seen.has(b.batch_id) && seen.add(b.batch_id)).sort((a, b) => a.generated_at < b.generated_at ? -1 : 1);
+  const gh = ghConf();
+  if (!gh) { inboxInfo.state = 'unconfigured'; return []; }
+  try {
+    const r = await ghGet(gh, 'index.json');
+    if (r.status === 404) { inboxInfo.state = 'empty'; return []; }
+    if (r.status === 401 || r.status === 403) { inboxInfo.state = 'denied'; return []; }
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    inboxInfo.state = 'ok';
+    const j = await r.json();
+    return (j.batches || []).filter(b => b.batch_id && b.file).sort((a, b) => a.generated_at < b.generated_at ? -1 : 1);
+  } catch (e) { console.warn(e); inboxInfo.state = 'error'; return []; }
 }
 function applyInMemory(changes) { for (const c of COLLECTIONS) for (const d of changes[c] || []) { if (d._deleted) delete S.db[c][d.id]; else S.db[c][d.id] = d; } S.miniDirty = true; }
 async function refreshFromGitHub({ silent = true } = {}) {
@@ -359,10 +369,10 @@ async function refreshFromGitHub({ silent = true } = {}) {
     const list = await fetchInboxIndex();
     inboxInfo.last = list.at(-1) || null; inboxInfo.count = list.length;
     const pending = list.filter(b => !S.db.batches[b.batch_id]);
-    if (!pending.length) { if (!silent) toast(inboxInfo.error ? 'Dépôt GitHub injoignable pour le moment.' : 'Le site est à jour.'); return; }
+    if (!pending.length) { if (!silent) toast({ unconfigured: 'Veille automatique non configurée (Admin : Réglages → Veille automatique).', denied: 'Accès au dépôt des veilles refusé : jeton GitHub invalide ou expiré (Admin : Réglages).', error: 'Dépôt GitHub injoignable pour le moment.', empty: 'Aucune veille déposée pour l’instant.' }[inboxInfo.state] || 'Le site est à jour.', ['denied', 'error'].includes(inboxInfo.state) ? 'err' : ''); return; }
     const total = { new: 0, updated: 0, links: 0 }; let firstCrit = null;
     for (const b of pending) {
-      let text; try { const r = await fetch(b.base + b.file + '?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw new Error('HTTP ' + r.status); text = await r.text(); } catch (e) { console.warn('Lot illisible', b.batch_id, e); continue; }
+      let text; try { const r = await ghGet(ghConf(), b.file); if (!r.ok) throw new Error('HTTP ' + r.status); text = await r.text(); } catch (e) { console.warn('Lot illisible', b.batch_id, e); continue; }
       let raws; try { raws = parseInput(text); } catch (e) { console.warn('Lot invalide', b.batch_id, e); continue; }
       for (const raw of raws) {
         const an = analyzeBatch({ ...raw, batch_id: b.batch_id }, S.db);
@@ -496,7 +506,8 @@ $('#exportBtn').onclick = openExport;
 $('#bell').onclick = () => {
   const list = Object.values(S.db.batches).sort((a, b) => ts(b.imported_at) - ts(a.imported_at)).slice(0, 40);
   const seen = pref.get('seenBatches', 0); pref.set('seenBatches', Date.now());
-  const head = `<p class="meta">Veille automatique de Claude : ${esc(INBOX.schedule)}, lue directement sur GitHub. ${inboxInfo.last ? `Dernière veille : ${esc(fmtDT(inboxInfo.last.generated_at))}.` : 'Aucune veille déposée pour l’instant.'}</p><div class="row" style="margin-bottom:12px"><button class="btn" id="chkNow">Vérifier maintenant</button><a class="btn" href="${INBOX.routinesUrl}" target="_blank" rel="noopener">Lancer une veille (tâches planifiées)</a></div>`;
+  const st = { unconfigured: 'non configurée' + (isAdmin() ? ' (Réglages → Veille automatique)' : ' (à configurer par l’Admin)'), denied: 'accès refusé : jeton GitHub invalide ou expiré', error: 'dépôt injoignable pour le moment' }[inboxInfo.state];
+  const head = `<p class="meta">Veille automatique de Claude : ${esc(INBOX.schedule)}, lue dans le dépôt privé ${esc((S.gh?.owner || INBOX.owner) + '/' + (S.gh?.repo || INBOX.repo))}. ${st ? `<b>État : ${esc(st)}.</b>` : inboxInfo.last ? `Dernière veille : ${esc(fmtDT(inboxInfo.last.generated_at))}.` : 'Aucune veille déposée pour l’instant.'}</p><div class="row" style="margin-bottom:12px"><button class="btn" id="chkNow">Vérifier maintenant</button><a class="btn" href="${INBOX.routinesUrl}" target="_blank" rel="noopener">Lancer une veille (tâches planifiées)</a></div>`;
   openModal('Journal des veilles', head + (list.length ? `<ul class="tl">${list.map(b => `<li class="${ts(b.imported_at) > seen ? 'critical' : ''}"><b>${esc(b.id)}</b>${b.demo ? '<span class="demo">DÉMO</span>' : ''}<br><span class="meta">Produit le ${esc(fmtDT(b.generated_at))} · importé le ${esc(fmtDT(b.imported_at))}</span><br>${b.counts ? `${b.counts.new} nouveau(x) · ${b.counts.updated} mis à jour · ${b.counts.links} lien(s)${b.counts.rejected ? ` · ${b.counts.rejected} rejeté(s)` : ''}` : ''}${b.request ? `<br><span class="meta">${esc(b.request)}</span>` : ''}${b.notes ? `<br><span class="meta">Notes : ${esc(b.notes)}</span>` : ''}</li>`).join('')}</ul>` : '<p class="empty">Aucun import pour le moment.</p>'), b => { $('#chkNow', b).onclick = async () => { closeModal(); await refreshFromGitHub({ silent: false }); }; });
   renderHeader();
 };
@@ -513,6 +524,11 @@ async function openSettings() {
     ${fb ? `<h3>Mon compte</h3>
     <p>Connecté en tant que <b>${esc(displayName(p))}</b> · ${esc(ROLES[S.role] || S.role)}</p>
     <div class="row"><button class="btn" id="sPwd">Changer mon mot de passe</button><button class="btn" id="sOut">Se déconnecter</button></div>
+    ${isAdmin() ? `<h3>Veille automatique (dépôt privé)</h3>
+    <p class="meta">Les veilles de Claude sont déposées dans le dépôt GitHub <b>privé</b> ci-dessous. Le site les lit avec un jeton en lecture seule, visible uniquement des comptes connectés.</p>
+    <div class="grid2"><label class="f">Propriétaire<input type="text" id="ghOwner" value="${esc(S.gh?.owner || INBOX.owner)}"></label><label class="f">Dépôt privé<input type="text" id="ghRepo" value="${esc(S.gh?.repo || INBOX.repo)}"></label></div>
+    <label class="f">Jeton GitHub (fine-grained, lecture seule du contenu de ce dépôt)<input type="password" id="ghToken" placeholder="${S.gh?.token ? 'Jeton enregistré — laisser vide pour le conserver' : 'github_pat_…'}" autocomplete="off"></label>
+    <div class="row"><button class="btn pri" id="ghSave">Tester et enregistrer</button><span class="meta" id="ghMsg">${S.gh?.token ? 'Configurée.' : 'Non configurée.'}</span></div>` : ''}
     ${isAdmin() ? `<h3>Comptes</h3><p class="meta">Seul un administrateur peut créer des comptes. La page de connexion ne permet que de se connecter.</p><div class="row"><button class="btn pri" id="sUsers">Gérer les comptes</button></div>` : ''}`
     : `<h3>Stockage</h3><p>Mode local : les données restent dans ce navigateur. Configurez Firebase (voir README) pour activer les comptes et la synchronisation.</p>`}
     <h3>Données</h3><p class="meta">${counts}</p>
@@ -525,6 +541,23 @@ async function openSettings() {
     on('#sOut', async () => { await S.store.signOut(); location.reload(); });
     on('#sPwd', openPasswordChange);
     on('#sUsers', openUsers);
+    on('#ghSave', async () => {
+      const msg = $('#ghMsg', b);
+      const gh = { owner: $('#ghOwner', b).value.trim(), repo: $('#ghRepo', b).value.trim(), branch: INBOX.branch, path: INBOX.path, token: $('#ghToken', b).value.trim() || S.gh?.token || '' };
+      if (!gh.owner || !gh.repo || !gh.token) return msg.textContent = 'Renseignez le dépôt et le jeton.';
+      msg.textContent = 'Test de l’accès…';
+      try {
+        const r = await fetch(`https://api.github.com/repos/${encodeURIComponent(gh.owner)}/${encodeURIComponent(gh.repo)}`, { headers: { Authorization: `Bearer ${gh.token}`, Accept: 'application/vnd.github+json' } });
+        if (r.status === 401) throw new Error('jeton invalide ou expiré');
+        if (r.status === 404 || r.status === 403) throw new Error('dépôt introuvable ou non autorisé pour ce jeton');
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const repo = await r.json();
+        if (!repo.private) throw new Error('ce dépôt est PUBLIC : rendez-le privé (Settings → Danger Zone) pour protéger les veilles');
+        gh.updated_at = new Date().toISOString(); gh.updated_by = S.store.profile?.username || 'local';
+        await S.store.setConfig('github', gh); S.gh = gh;
+        msg.textContent = 'Accès vérifié et enregistré.'; refreshFromGitHub({ silent: false });
+      } catch (err) { msg.textContent = 'Échec : ' + authError(err); }
+    });
     on('#sPush', () => confirmBox('Envoyer la base locale ?', `Les ${localN} événements de ce navigateur seront fusionnés dans la base partagée (les documents de même identifiant seront remplacés).`, 'Envoyer', async () => {
       const ch = {}; for (const c of COLLECTIONS) ch[c] = Object.values(local[c] || {}); await save(ch, 'Base locale envoyée vers Firebase.'); }, false));
     on('#sDemo', () => fb ? confirmBox('Charger la démo dans la base partagée ?', 'Tous les comptes verront ces 16 événements fictifs (marqués DÉMO) jusqu’à ce que vous les retiriez dans Réglages.', 'Charger', () => loadDemo(), false) : (closeModal(), loadDemo()));
@@ -550,6 +583,7 @@ async function openSettings() {
   });
 }
 $('#settingsBtn').onclick = openSettings;
+$('#accountsBtn').onclick = () => isAdmin() && openUsers();
 
 const authError = err => ({
   'auth/invalid-credential': 'identifiant ou mot de passe incorrect.', 'auth/wrong-password': 'mot de passe incorrect.', 'auth/user-not-found': 'identifiant inconnu.',
@@ -571,6 +605,20 @@ function openPasswordChange() {
       try { await S.store.changePassword($('#pCur', b).value, n); closeModal(); toast('Mot de passe modifié.', 'ok'); }
       catch (err) { $('#pErr', b).textContent = 'Échec : ' + authError(err); }
     };
+  });
+}
+
+// ---------- Partage d'un accès ----------
+function openShare(name, pw, role) {
+  const url = location.origin + location.pathname;
+  const text = `Voici ton accès à LiveWorld (${ROLES[role]}) :\n${url}\nIdentifiant : ${name}\nMot de passe provisoire : ${pw}\nÀ la première connexion, change-le dans Réglages → Changer mon mot de passe.`;
+  openModal('Compte créé', `<p>Le compte <b>${esc(name)}</b> (${esc(ROLES[role])}) est prêt. Transmettez ces informations à la personne :</p>
+    <textarea class="out" id="shTxt" readonly style="min-height:130px">${esc(text)}</textarea>
+    <div class="row">${navigator.share ? '<button class="btn pri" id="shShare">Partager…</button>' : ''}<button class="btn ${navigator.share ? '' : 'pri'}" id="shCopy">Copier</button><button class="btn" id="shBack">Retour aux comptes</button></div>
+    <p class="meta">Le mot de passe n’est affiché qu’une fois : il n’est enregistré nulle part en clair.</p>`, b => {
+    const sh = $('#shShare', b); if (sh) sh.onclick = async () => { try { await navigator.share({ title: 'Accès LiveWorld', text }); } catch {} };
+    $('#shCopy', b).onclick = async () => toast(await copyText(text) ? 'Accès copié.' : 'Copie impossible : sélectionnez le texte.');
+    $('#shBack', b).onclick = openUsers;
   });
 }
 
@@ -604,7 +652,7 @@ async function openUsers() {
       if (!USERNAME_RE.test(name)) return msg.textContent = 'Identifiant : 2 à 30 caractères (minuscules, chiffres, . _ -).';
       if (pw.length < 8) return msg.textContent = 'Mot de passe : 8 caractères minimum.';
       msg.textContent = 'Création…';
-      try { await S.store.createUser(name, pw, role); toast(`Compte <b>${esc(name)}</b> créé (${esc(ROLES[role])}). Mot de passe : <code>${esc(pw)}</code>`, 'ok'); openUsers(); }
+      try { await S.store.createUser(name, pw, role); openShare(name, pw, role); }
       catch (err) { msg.textContent = 'Échec : ' + authError(err); }
     };
     $$('[data-role]', b).forEach(s => s.onchange = async () => { try { await S.store.updateUser(s.dataset.role, { role: s.value }); toast('Rôle modifié.', 'ok'); } catch (err) { toast('Échec : ' + esc(authError(err)), 'err'); openUsers(); } });
@@ -694,6 +742,7 @@ async function boot() {
   try { S.db = await S.store.load(); }
   catch (e) { console.error(e); toast('Lecture des données impossible : ' + esc(authError(e)), 'err'); }
   renderAll();
+  try { S.gh = await S.store.getConfig('github'); } catch (e) { console.warn('config/github', e); }
   refreshFromGitHub(); setInterval(() => refreshFromGitHub(), 15 * 60e3);
   if (S.store.mode === 'firebase') toast(`Connecté : <b>${esc(displayName(S.store.profile))}</b> · ${esc(ROLES[S.role])}`);
   refreshLive(); setInterval(() => { if (S.D === today()) refreshLive(); }, 5 * 60e3);
