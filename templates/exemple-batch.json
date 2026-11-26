@@ -1,0 +1,557 @@
+{
+  "schema": "liveworld.batch/v1",
+  "batch_id": "2026-11-26T08-30-claude",
+  "generated_at": "2026-11-26T08:30:00+01:00",
+  "author": "claude",
+  "request": "[EXEMPLE] Veille quotidienne du 26 novembre",
+  "coverage": {
+    "from": "2026-11-25",
+    "to": "2026-11-26",
+    "focus": "Asie-Pacifique"
+  },
+  "notes": "FICHIER D'EXEMPLE : médias, URL et chiffres fictifs, uniquement pour montrer le format. Bilan humain du séisme non confirmé à l'heure du lot.",
+  "events": [
+    {
+      "id": "evt-20261126-sumatra-seisme-m71",
+      "title": "Séisme de magnitude 7,1 au large de Sumatra",
+      "summary": "Un séisme de magnitude 7,1 frappe au large de Sumatra. L'alerte tsunami régionale a été levée après deux heures ; le bilan humain est en cours d'évaluation.",
+      "date": "2026-11-26",
+      "status": "active",
+      "severity": "critical",
+      "themes": [
+        "catastrophes-climat"
+      ],
+      "tags": [
+        "indonésie",
+        "séisme"
+      ],
+      "location": {
+        "name": "Ouest de Sumatra",
+        "country": "ID",
+        "lat": 0.2,
+        "lng": 97.0,
+        "precision": "sea"
+      },
+      "sources": [
+        {
+          "outlet": "Agence Démo",
+          "title": "[Démo] sumatra seisme",
+          "url": "https://example.org/demo/2026-11-26/sumatra-seisme",
+          "published_at": "2026-11-26T03:30:00+01:00"
+        },
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] sumatra tsunami leve",
+          "url": "https://example.org/demo/2026-11-26/sumatra-tsunami-leve",
+          "published_at": "2026-11-26T05:35:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-26T03:12:00+01:00",
+          "text": "Séisme M7,1 ; alerte tsunami régionale.",
+          "severity": "critical"
+        },
+        {
+          "at": "2026-11-26T05:20:00+01:00",
+          "text": "Alerte tsunami levée ; dégâts signalés sur la côte."
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Matières premières",
+          "direction": "volatile",
+          "horizon": "days",
+          "confidence": "low",
+          "rationale": "Région productrice d'huile de palme et de charbon : perturbations logistiques possibles."
+        }
+      ],
+      "blocks": [
+        {
+          "id": "chiffres",
+          "type": "key_figures",
+          "items": [
+            {
+              "label": "Magnitude",
+              "value": "7,1",
+              "source_url": "https://example.org/demo/2026-11-26/sumatra-seisme"
+            },
+            {
+              "label": "Profondeur",
+              "value": "25",
+              "unit": "km"
+            },
+            {
+              "label": "Durée de l'alerte tsunami",
+              "value": "2",
+              "unit": "h"
+            }
+          ]
+        },
+        {
+          "type": "callout",
+          "tone": "warning",
+          "title": "Bilan non consolidé",
+          "md": "Les chiffres de victimes varient selon les sources. **Attendre la confirmation** de l'agence nationale de gestion des catastrophes."
+        },
+        {
+          "type": "map_points",
+          "title": "Zones signalées",
+          "points": [
+            {
+              "name": "Épicentre",
+              "lat": 0.2,
+              "lng": 97.0,
+              "note": "M7,1"
+            },
+            {
+              "name": "Côte ouest (dégâts signalés)",
+              "lat": 0.9,
+              "lng": 99.1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt-20261126-or-record-refuge",
+      "title": "Or : nouveau plus haut sur la demande refuge",
+      "summary": "L'once d'or inscrit un plus haut historique en séance européenne, portée par les tensions en Asie.",
+      "date": "2026-11-26",
+      "status": "active",
+      "severity": "moderate",
+      "themes": [
+        "matieres-premieres",
+        "marches"
+      ],
+      "tags": [
+        "or"
+      ],
+      "location": {
+        "name": "Zurich",
+        "country": "CH",
+        "lat": 47.37,
+        "lng": 8.54,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] or record",
+          "url": "https://example.org/demo/2026-11-26/or-record",
+          "published_at": "2026-11-26T10:15:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-26T10:00:00+01:00",
+          "text": "Plus haut historique en séance."
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Métaux",
+          "direction": "bullish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Demande refuge sur l'or."
+        }
+      ],
+      "related": [
+        "evt-20261123-taiwan-exercices-militaires"
+      ]
+    },
+    {
+      "id": "evt-20261126-bce-pause-prolongee",
+      "title": "BCE : un membre du conseil évoque une pause plus longue",
+      "summary": "Un membre du conseil des gouverneurs juge prématuré de reprendre l'assouplissement compte tenu des effets de second tour.",
+      "date": "2026-11-26",
+      "status": "active",
+      "severity": "moderate",
+      "themes": [
+        "banques-centrales"
+      ],
+      "tags": [
+        "bce",
+        "taux"
+      ],
+      "location": {
+        "name": "Francfort",
+        "country": "DE",
+        "lat": 50.3,
+        "lng": 8.9,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] bce discours",
+          "url": "https://example.org/demo/2026-11-26/bce-discours",
+          "published_at": "2026-11-26T09:41:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-26T09:30:00+01:00",
+          "text": "Discours à Francfort."
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Devises",
+          "direction": "bullish",
+          "horizon": "days",
+          "confidence": "low",
+          "rationale": "Soutien marginal à l'euro."
+        }
+      ],
+      "parents": [
+        "evt-20261124-zone-euro-inflation-flash"
+      ]
+    },
+    {
+      "id": "evt-20261120-mer-rouge-attaques-drones",
+      "severity": "critical",
+      "summary": "Depuis le 20 novembre, des drones non revendiqués visent des navires marchands à l'entrée sud de la mer Rouge. Les principaux armateurs ont suspendu leurs transits et les escortes navales ont été élargies. Un quatrième navire a signalé une tentative d'abordage.",
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] mer rouge abordage",
+          "url": "https://example.org/demo/2026-11-26/mer-rouge-abordage",
+          "published_at": "2026-11-26T07:05:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-26T06:50:00+01:00",
+          "text": "Un quatrième navire signale une tentative d'abordage.",
+          "severity": "critical"
+        }
+      ],
+      "blocks": [
+        {
+          "id": "chiffres",
+          "type": "key_figures",
+          "items": [
+            {
+              "label": "Navires visés",
+              "value": "4",
+              "trend": "up",
+              "source_url": "https://example.org/demo/2026-11-26/mer-rouge-abordage"
+            },
+            {
+              "label": "Allongement Asie-Europe",
+              "value": "10-14",
+              "unit": "jours"
+            },
+            {
+              "label": "Brent depuis le 20/11",
+              "value": "+6",
+              "unit": "%",
+              "trend": "up"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "md": "**Pourquoi c'est important.** Le détroit de Bab-el-Mandeb est un passage clé entre l'Asie et l'Europe via le canal de Suez. Un contournement par le Cap rallonge les rotations et réduit la capacité effective de la flotte.\n\n- Effet direct : taux de fret et primes d'assurance\n- Effet indirect : délais de livraison et prix à l'import en Europe"
+        },
+        {
+          "id": "fret",
+          "type": "chart",
+          "chart": "line",
+          "title": "Indice fictif du fret Asie-Europe",
+          "unit": "pts",
+          "labels": [
+            "18/11",
+            "19/11",
+            "20/11",
+            "21/11",
+            "24/11",
+            "25/11",
+            "26/11"
+          ],
+          "series": [
+            {
+              "name": "Asie → Europe",
+              "values": [
+                100,
+                101,
+                104,
+                109,
+                114,
+                117,
+                118
+              ]
+            },
+            {
+              "name": "Asie → États-Unis",
+              "values": [
+                100,
+                100,
+                101,
+                102,
+                104,
+                105,
+                105
+              ]
+            }
+          ],
+          "source_url": "https://example.org/demo/fret"
+        },
+        {
+          "type": "diagram",
+          "title": "Transmission du choc",
+          "mermaid": "flowchart LR\n  A[\"Attaques en mer Rouge\"] --> B[\"Détours par le Cap\"]\n  A --> C[\"Prime de risque Brent\"]\n  B --> D[\"Hausse du fret\"]\n  C --> E[\"Inflation importée\"]\n  D --> E\n  E --> F[\"BCE plus prudente\"]"
+        },
+        {
+          "type": "table",
+          "title": "Routes comparées (exemple)",
+          "columns": [
+            "Route",
+            "Distance",
+            "Durée",
+            "Risque"
+          ],
+          "rows": [
+            [
+              "Suez / mer Rouge",
+              "≈ 11 000 milles",
+              "≈ 30 j",
+              "Élevé"
+            ],
+            [
+              "Cap de Bonne-Espérance",
+              "≈ 14 000 milles",
+              "≈ 40 j",
+              "Faible"
+            ]
+          ],
+          "note": "Ordres de grandeur pour un trajet Shanghai-Rotterdam."
+        },
+        {
+          "type": "timeline",
+          "title": "Contexte",
+          "items": [
+            {
+              "date": "2026-11-20",
+              "label": "Premières attaques"
+            },
+            {
+              "date": "2026-11-21",
+              "label": "Détours annoncés"
+            },
+            {
+              "date": "2026-11-23",
+              "label": "Escortes élargies"
+            }
+          ]
+        },
+        {
+          "id": "scenarios",
+          "type": "scenarios",
+          "items": [
+            {
+              "name": "Désescalade rapide",
+              "probability": "low",
+              "description": "Retour des transits sous escorte d'ici deux semaines.",
+              "signals": [
+                "Reprise des réservations via Suez",
+                "Baisse des primes de guerre"
+              ]
+            },
+            {
+              "name": "Statu quo armé",
+              "probability": "high",
+              "description": "Attaques sporadiques, détours maintenus jusqu'en janvier.",
+              "signals": [
+                "Nouvelles attaques",
+                "Prolongation des suspensions"
+              ]
+            },
+            {
+              "name": "Escalade régionale",
+              "probability": "low",
+              "description": "Frappes contre des infrastructures côtières.",
+              "signals": [
+                "Mobilisation navale",
+                "Hausse brutale du Brent"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "quote",
+          "text": "Nous ne reprendrons pas la route de la mer Rouge tant que la sécurité des équipages n'est pas garantie.",
+          "author": "Porte-parole d'un armateur (exemple)",
+          "source_url": "https://example.org/demo/2026-11-20/mer-rouge-armateurs"
+        },
+        {
+          "type": "image",
+          "url": "https://commons.wikimedia.org/wiki/Special:FilePath/Bab-el-Mandeb.jpg",
+          "alt": "Vue satellite du détroit de Bab-el-Mandeb",
+          "caption": "Le détroit de Bab-el-Mandeb (illustration de format)",
+          "credit": "Wikimedia Commons",
+          "license": "Domaine public",
+          "source_url": "https://commons.wikimedia.org/"
+        },
+        {
+          "type": "links",
+          "title": "Pour aller plus loin",
+          "items": [
+            {
+              "title": "Fiche d'exemple : routes maritimes",
+              "url": "https://example.org/demo/routes",
+              "outlet": "Exemple Média",
+              "why": "Comprendre les routes alternatives"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "evt-20261123-taiwan-exercices-militaires",
+      "severity": "high",
+      "updates": [
+        {
+          "at": "2026-11-26T07:20:00+01:00",
+          "text": "Fin annoncée des exercices sous 48 h.",
+          "severity": "high"
+        }
+      ],
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] taiwan fin exercices",
+          "url": "https://example.org/demo/2026-11-26/taiwan-fin-exercices",
+          "published_at": "2026-11-26T07:35:00+01:00"
+        }
+      ]
+    },
+    {
+      "id": "evt-20261124-bresil-intervention-real",
+      "severity": "high",
+      "updates": [
+        {
+          "at": "2026-11-25T14:00:00+01:00",
+          "text": "Le real reprend 1,2 %.",
+          "severity": "high"
+        }
+      ],
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] bresil rebond",
+          "url": "https://example.org/demo/2026-11-25/bresil-rebond",
+          "published_at": "2026-11-25T14:15:00+01:00"
+        }
+      ]
+    },
+    {
+      "id": "evt-20261123-mer-du-nord-arret-champ-gazier",
+      "severity": "moderate",
+      "status": "monitoring",
+      "updates": [
+        {
+          "at": "2026-11-25T10:00:00+01:00",
+          "text": "Redémarrage partiel prévu sous 5 jours.",
+          "severity": "moderate"
+        }
+      ],
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] champ gazier redemarrage",
+          "url": "https://example.org/demo/2026-11-25/champ-gazier-redemarrage",
+          "published_at": "2026-11-25T10:10:00+01:00"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "evt-20261126-or-record-refuge",
+      "to": "evt-20261123-taiwan-exercices-militaires",
+      "type": "responds_to",
+      "confidence": "medium",
+      "rationale": "Achats refuges en réaction aux tensions dans le détroit."
+    },
+    {
+      "from": "evt-20261120-mer-rouge-attaques-drones",
+      "to": "evt-20261124-zone-euro-inflation-flash",
+      "type": "causes",
+      "confidence": "low",
+      "rationale": "Contribution indirecte via l'énergie et le fret."
+    }
+  ],
+  "briefing": {
+    "date": "2026-11-26",
+    "title": "Briefing du 26 novembre (exemple)",
+    "top": [
+      {
+        "event_id": "evt-20261126-sumatra-seisme-m71",
+        "why": "Séisme majeur, bilan humain en cours d'évaluation."
+      },
+      {
+        "event_id": "evt-20261120-mer-rouge-attaques-drones",
+        "why": "Quatrième navire visé : le contournement par le Cap s'installe."
+      },
+      {
+        "event_id": "evt-20261123-taiwan-exercices-militaires",
+        "why": "Fin annoncée des manœuvres, détente partielle sur l'Asie."
+      }
+    ],
+    "macro": "La journée combine un choc naturel en Asie du Sud-Est et une détente partielle sur les tensions militaires autour de Taïwan. En Europe, le discours d'un membre de la BCE confirme que l'inflation importée par l'énergie et le fret retarde l'assouplissement monétaire.",
+    "markets": "L'or inscrit un record sur la demande refuge. Le gaz européen se replie après l'annonce d'un redémarrage partiel en mer du Nord. Le real brésilien rebondit après l'intervention de la banque centrale.",
+    "watch": [
+      "Bilan humain et dégâts portuaires à Sumatra",
+      "Fin effective des manœuvres autour de Taïwan",
+      "Primes d'assurance en mer Rouge",
+      "Prochaines interventions des membres de la BCE"
+    ]
+  },
+  "markets": [
+    {
+      "date": "2026-11-25",
+      "asset": "SPX",
+      "close": 6751.2,
+      "change_pct": 0.4
+    },
+    {
+      "date": "2026-11-25",
+      "asset": "CAC40",
+      "close": 7982.5,
+      "change_pct": 0.3
+    },
+    {
+      "date": "2026-11-25",
+      "asset": "XAU",
+      "close": 4230.0,
+      "change_pct": 1.1
+    },
+    {
+      "date": "2026-11-25",
+      "asset": "BRENT",
+      "close": 70.38,
+      "change_pct": 0.6
+    },
+    {
+      "date": "2026-11-25",
+      "asset": "EURUSD",
+      "close": 1.1555,
+      "change_pct": 0.2
+    },
+    {
+      "date": "2026-11-25",
+      "asset": "BTC",
+      "close": 92204,
+      "change_pct": 1.7
+    },
+    {
+      "date": "2026-11-25",
+      "asset": "US10Y",
+      "close": 4.43,
+      "change_pct": -1
+    }
+  ]
+}

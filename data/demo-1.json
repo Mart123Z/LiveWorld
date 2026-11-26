@@ -1,0 +1,386 @@
+{
+  "schema": "liveworld.batch/v1",
+  "batch_id": "2026-11-21T19-00-claude",
+  "generated_at": "2026-11-21T19:00:00+01:00",
+  "author": "claude",
+  "request": "[DÉMO] Veille initiale",
+  "coverage": {
+    "from": "2026-11-20",
+    "to": "2026-11-21"
+  },
+  "notes": "Lot de démonstration : événements, médias et liens fictifs.",
+  "events": [
+    {
+      "id": "evt-20261120-mer-rouge-attaques-drones",
+      "title": "Mer Rouge : attaques de drones contre trois porte-conteneurs",
+      "summary": "Trois navires marchands ont été visés par des drones non revendiqués à l'entrée sud de la mer Rouge. Aucun naufrage, mais deux armateurs majeurs suspendent leurs transits. Les marines présentes renforcent les escortes.",
+      "date": "2026-11-20",
+      "status": "active",
+      "severity": "critical",
+      "themes": [
+        "conflits-securite",
+        "logistique-commerce"
+      ],
+      "tags": [
+        "mer rouge",
+        "bab-el-mandeb",
+        "transport maritime"
+      ],
+      "location": {
+        "name": "Détroit de Bab-el-Mandeb",
+        "lat": 12.6,
+        "lng": 43.4,
+        "precision": "sea"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] mer rouge drones",
+          "url": "https://example.org/demo/2026-11-20/mer-rouge-drones",
+          "published_at": "2026-11-20T06:52:00+01:00"
+        },
+        {
+          "outlet": "Agence Démo",
+          "title": "[Démo] mer rouge armateurs",
+          "url": "https://example.org/demo/2026-11-20/mer-rouge-armateurs",
+          "published_at": "2026-11-20T11:30:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-20T06:40:00+01:00",
+          "text": "Premiers signalements d'un incident au large de Moka.",
+          "severity": "high"
+        },
+        {
+          "at": "2026-11-20T11:15:00+01:00",
+          "text": "Trois navires touchés, suspension des transits par deux armateurs.",
+          "severity": "critical"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Fret maritime",
+          "direction": "bullish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Primes de risque de guerre et détours par le Cap : hausse des taux de fret Asie-Europe."
+        },
+        {
+          "sector": "Pétrole",
+          "direction": "bullish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Prime de risque sur le Brent liée à la route de la mer Rouge."
+        }
+      ]
+    },
+    {
+      "id": "evt-20261120-panama-tirant-eau",
+      "title": "Canal de Panama : restrictions de tirant d'eau",
+      "summary": "L'autorité du canal limite le tirant d'eau en raison d'un niveau du lac Gatún sous la normale saisonnière.",
+      "date": "2026-11-20",
+      "status": "monitoring",
+      "severity": "moderate",
+      "themes": [
+        "logistique-commerce",
+        "catastrophes-climat"
+      ],
+      "tags": [
+        "panama",
+        "sécheresse"
+      ],
+      "location": {
+        "name": "Canal de Panama",
+        "country": "PA",
+        "lat": 9.1,
+        "lng": -79.7,
+        "precision": "region"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] panama tirant eau",
+          "url": "https://example.org/demo/2026-11-20/panama-tirant-eau",
+          "published_at": "2026-11-20T15:20:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-20T15:00:00+01:00",
+          "text": "Nouvelles limites de tirant d'eau.",
+          "severity": "moderate"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Fret maritime",
+          "direction": "bullish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Capacité réduite sur la route Asie-côte Est des États-Unis."
+        }
+      ]
+    },
+    {
+      "id": "evt-20261120-ladakh-incident-frontalier",
+      "title": "Inde-Chine : incident frontalier au Ladakh",
+      "summary": "Un accrochage sans victime entre patrouilles est suivi de l'ouverture de pourparlers au niveau des commandants de corps d'armée.",
+      "date": "2026-11-20",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "diplomatie",
+        "conflits-securite"
+      ],
+      "tags": [
+        "inde",
+        "chine"
+      ],
+      "location": {
+        "name": "Ladakh",
+        "country": "IN",
+        "lat": 34.2,
+        "lng": 77.6,
+        "precision": "region"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] ladakh accrochage",
+          "url": "https://example.org/demo/2026-11-20/ladakh-accrochage",
+          "published_at": "2026-11-20T12:30:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-20T12:00:00+01:00",
+          "text": "Accrochage signalé.",
+          "severity": "high"
+        }
+      ]
+    },
+    {
+      "id": "evt-20261121-fret-detours-cap",
+      "title": "Fret maritime : les armateurs détournent vers le cap de Bonne-Espérance",
+      "summary": "Les principaux armateurs rallongent leurs routes Asie-Europe de 10 à 14 jours. L'indice des taux de conteneurs Asie-Europe gagne nettement.",
+      "date": "2026-11-21",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "logistique-commerce"
+      ],
+      "tags": [
+        "transport maritime",
+        "conteneurs"
+      ],
+      "location": {
+        "name": "Cap de Bonne-Espérance",
+        "country": "ZA",
+        "lat": -34.36,
+        "lng": 18.47,
+        "precision": "sea"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] fret detours",
+          "url": "https://example.org/demo/2026-11-21/fret-detours",
+          "published_at": "2026-11-21T10:12:00+01:00"
+        },
+        {
+          "outlet": "Agence Démo",
+          "title": "[Démo] fret indice",
+          "url": "https://example.org/demo/2026-11-21/fret-indice",
+          "published_at": "2026-11-21T14:40:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-21T10:00:00+01:00",
+          "text": "Annonce des détours par deux armateurs.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Fret maritime",
+          "direction": "bullish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Capacité effective réduite par l'allongement des rotations."
+        },
+        {
+          "sector": "Distribution",
+          "direction": "bearish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Coûts d'approvisionnement et retards avant les fêtes."
+        }
+      ],
+      "parents": [
+        "evt-20261120-mer-rouge-attaques-drones"
+      ],
+      "related": [
+        "evt-20261120-panama-tirant-eau"
+      ]
+    },
+    {
+      "id": "evt-20261121-brent-prime-risque",
+      "title": "Pétrole : le Brent gagne 6 % en deux séances",
+      "summary": "Les contrats Brent intègrent une prime de risque géopolitique liée à la mer Rouge.",
+      "date": "2026-11-21",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "energie",
+        "marches"
+      ],
+      "tags": [
+        "brent",
+        "pétrole"
+      ],
+      "location": {
+        "name": "Londres (ICE)",
+        "country": "GB",
+        "lat": 51.51,
+        "lng": -0.08,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] brent hausse",
+          "url": "https://example.org/demo/2026-11-21/brent-hausse",
+          "published_at": "2026-11-21T16:20:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-21T16:00:00+01:00",
+          "text": "+6 % en deux séances.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Pétrole",
+          "direction": "bullish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Prime de risque sur l'offre du Golfe."
+        },
+        {
+          "sector": "Transport aérien",
+          "direction": "bearish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Hausse du coût du kérosène."
+        }
+      ],
+      "parents": [
+        "evt-20261120-mer-rouge-attaques-drones"
+      ]
+    },
+    {
+      "id": "evt-20261121-fed-divisions-decembre",
+      "title": "Fed : le compte rendu révèle des divisions sur décembre",
+      "summary": "Le compte rendu de la dernière réunion montre une majorité étroite en faveur d'une baisse en décembre, plusieurs membres plaidant pour une pause.",
+      "date": "2026-11-21",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "banques-centrales"
+      ],
+      "tags": [
+        "fed",
+        "taux"
+      ],
+      "location": {
+        "name": "Washington",
+        "country": "US",
+        "lat": 38.9,
+        "lng": -77.04,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] fed compte rendu",
+          "url": "https://example.org/demo/2026-11-21/fed-compte-rendu",
+          "published_at": "2026-11-21T20:05:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-21T20:00:00+01:00",
+          "text": "Publication du compte rendu.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Obligations",
+          "direction": "volatile",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Incertitude accrue sur la trajectoire des taux."
+        },
+        {
+          "sector": "Devises",
+          "direction": "bullish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Dollar soutenu."
+        }
+      ]
+    },
+    {
+      "id": "evt-20261121-chili-greve-cuivre",
+      "title": "Chili : grève dans une grande mine de cuivre",
+      "summary": "Les syndicats d'une des plus grandes mines de cuivre au monde entament une grève illimitée.",
+      "date": "2026-11-21",
+      "status": "active",
+      "severity": "moderate",
+      "themes": [
+        "matieres-premieres",
+        "social"
+      ],
+      "tags": [
+        "cuivre",
+        "chili"
+      ],
+      "location": {
+        "name": "Antofagasta",
+        "country": "CL",
+        "lat": -24.27,
+        "lng": -69.07,
+        "precision": "region"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] chili greve",
+          "url": "https://example.org/demo/2026-11-21/chili-greve",
+          "published_at": "2026-11-21T14:10:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-21T14:00:00+01:00",
+          "text": "Grève illimitée.",
+          "severity": "moderate"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Métaux",
+          "direction": "bullish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Offre mondiale de cuivre réduite."
+        }
+      ]
+    }
+  ]
+}

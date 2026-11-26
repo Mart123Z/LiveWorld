@@ -1,0 +1,358 @@
+{
+  "schema": "liveworld.batch/v1",
+  "batch_id": "2026-11-24T19-30-claude",
+  "generated_at": "2026-11-24T19:30:00+01:00",
+  "author": "claude",
+  "request": "[DÉMO] Veille du 24 novembre",
+  "coverage": {
+    "from": "2026-11-22",
+    "to": "2026-11-24"
+  },
+  "events": [
+    {
+      "id": "evt-20261123-taiwan-exercices-militaires",
+      "title": "Détroit de Taïwan : exercices militaires à grande échelle",
+      "summary": "Des manœuvres aéronavales de grande ampleur sont annoncées sans préavis autour de l'île. Plusieurs couloirs aériens commerciaux sont temporairement fermés.",
+      "date": "2026-11-23",
+      "status": "active",
+      "severity": "critical",
+      "themes": [
+        "conflits-securite",
+        "diplomatie"
+      ],
+      "tags": [
+        "taïwan",
+        "chine"
+      ],
+      "location": {
+        "name": "Détroit de Taïwan",
+        "lat": 24.0,
+        "lng": 119.8,
+        "precision": "sea"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] taiwan manoeuvres",
+          "url": "https://example.org/demo/2026-11-23/taiwan-manoeuvres",
+          "published_at": "2026-11-23T05:25:00+01:00"
+        },
+        {
+          "outlet": "Agence Démo",
+          "title": "[Démo] taiwan espace aerien",
+          "url": "https://example.org/demo/2026-11-23/taiwan-espace-aerien",
+          "published_at": "2026-11-23T06:10:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-23T05:10:00+01:00",
+          "text": "Annonce des manœuvres et fermetures d'espaces aériens.",
+          "severity": "critical"
+        },
+        {
+          "at": "2026-11-24T18:00:00+01:00",
+          "text": "Réouverture partielle des couloirs aériens.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Tech / Semi-conducteurs",
+          "direction": "bearish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Concentration de la fonderie avancée dans la zone."
+        },
+        {
+          "sector": "Devises",
+          "direction": "volatile",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Flux refuges vers le yen et le franc suisse."
+        }
+      ]
+    },
+    {
+      "id": "evt-20261123-semis-asie-baisse",
+      "title": "Semi-conducteurs : forte baisse des valeurs asiatiques",
+      "summary": "Les valeurs de la chaîne des semi-conducteurs reculent de 4 à 7 % en Asie.",
+      "date": "2026-11-23",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "tech-semis",
+        "marches"
+      ],
+      "tags": [
+        "semi-conducteurs"
+      ],
+      "location": {
+        "name": "Hsinchu",
+        "country": "TW",
+        "lat": 24.8,
+        "lng": 120.97,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] semis asie",
+          "url": "https://example.org/demo/2026-11-23/semis-asie",
+          "published_at": "2026-11-23T09:45:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-23T09:30:00+01:00",
+          "text": "Ouverture en forte baisse.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Tech / Semi-conducteurs",
+          "direction": "bearish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Prime de risque sur l'approvisionnement en puces avancées."
+        }
+      ],
+      "parents": [
+        "evt-20261123-taiwan-exercices-militaires"
+      ]
+    },
+    {
+      "id": "evt-20261123-mer-du-nord-arret-champ-gazier",
+      "title": "Mer du Nord : arrêt imprévu d'un champ gazier majeur",
+      "summary": "Un incident technique interrompt la production d'un grand champ gazier norvégien.",
+      "date": "2026-11-23",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "energie"
+      ],
+      "tags": [
+        "gaz",
+        "norvège"
+      ],
+      "location": {
+        "name": "Mer du Nord (Norvège)",
+        "country": "NO",
+        "lat": 60.5,
+        "lng": 2.8,
+        "precision": "sea"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] champ gazier arret",
+          "url": "https://example.org/demo/2026-11-23/champ-gazier-arret",
+          "published_at": "2026-11-23T07:45:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-23T07:30:00+01:00",
+          "text": "Arrêt de production annoncé.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Gaz",
+          "direction": "bullish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Offre européenne réduite en début d'hiver."
+        }
+      ]
+    },
+    {
+      "id": "evt-20261123-ttf-gaz-hausse",
+      "title": "Gaz européen : le TTF bondit de 12 %",
+      "summary": "Le contrat de référence européen grimpe de 12 % en séance.",
+      "date": "2026-11-23",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "energie",
+        "marches"
+      ],
+      "tags": [
+        "gaz",
+        "ttf"
+      ],
+      "location": {
+        "name": "Amsterdam",
+        "country": "NL",
+        "lat": 52.37,
+        "lng": 4.9,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] ttf hausse",
+          "url": "https://example.org/demo/2026-11-23/ttf-hausse",
+          "published_at": "2026-11-23T15:10:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-23T15:00:00+01:00",
+          "text": "+12 % en séance.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Gaz",
+          "direction": "bullish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Tension sur l'offre."
+        },
+        {
+          "sector": "Chimie",
+          "direction": "bearish",
+          "horizon": "weeks",
+          "confidence": "medium",
+          "rationale": "Coûts d'intrants en hausse."
+        }
+      ],
+      "parents": [
+        "evt-20261123-mer-du-nord-arret-champ-gazier"
+      ]
+    },
+    {
+      "id": "evt-20261124-zone-euro-inflation-flash",
+      "title": "Zone euro : inflation flash au-dessus des attentes",
+      "summary": "L'estimation flash ressort au-dessus du consensus, tirée par l'énergie et les biens importés.",
+      "date": "2026-11-24",
+      "status": "active",
+      "severity": "high",
+      "themes": [
+        "macroeconomie"
+      ],
+      "tags": [
+        "inflation",
+        "zone euro"
+      ],
+      "location": {
+        "name": "Francfort",
+        "country": "DE",
+        "lat": 50.11,
+        "lng": 8.68,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] inflation flash",
+          "url": "https://example.org/demo/2026-11-24/inflation-flash",
+          "published_at": "2026-11-24T11:02:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-24T11:00:00+01:00",
+          "text": "Publication de l'estimation flash.",
+          "severity": "high"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Obligations",
+          "direction": "bearish",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Hausse des rendements à 2 ans en zone euro."
+        }
+      ],
+      "parents": [
+        "evt-20261121-fret-detours-cap",
+        "evt-20261121-brent-prime-risque"
+      ]
+    },
+    {
+      "id": "evt-20261124-bresil-intervention-real",
+      "title": "Brésil : intervention d'urgence de la banque centrale sur le real",
+      "summary": "Après une chute du real en séance, la banque centrale annonce des ventes de dollars et des swaps de change exceptionnels.",
+      "date": "2026-11-24",
+      "status": "active",
+      "severity": "critical",
+      "themes": [
+        "banques-centrales",
+        "marches"
+      ],
+      "tags": [
+        "brésil",
+        "real"
+      ],
+      "location": {
+        "name": "Brasília",
+        "country": "BR",
+        "lat": -15.79,
+        "lng": -47.88,
+        "precision": "city"
+      },
+      "sources": [
+        {
+          "outlet": "Exemple Média",
+          "title": "[Démo] bresil real",
+          "url": "https://example.org/demo/2026-11-24/bresil-real",
+          "published_at": "2026-11-24T15:50:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-24T13:00:00+01:00",
+          "text": "Le real chute de 3 %.",
+          "severity": "high"
+        },
+        {
+          "at": "2026-11-24T15:40:00+01:00",
+          "text": "Intervention d'urgence annoncée.",
+          "severity": "critical"
+        }
+      ],
+      "impacts": [
+        {
+          "sector": "Devises",
+          "direction": "volatile",
+          "horizon": "days",
+          "confidence": "medium",
+          "rationale": "Volatilité accrue sur les devises d'Amérique latine."
+        }
+      ]
+    },
+    {
+      "id": "evt-20261120-mer-rouge-attaques-drones",
+      "sources": [
+        {
+          "outlet": "Agence Démo",
+          "title": "[Démo] mer rouge escortes",
+          "url": "https://example.org/demo/2026-11-23/mer-rouge-escortes",
+          "published_at": "2026-11-23T09:20:00+01:00"
+        }
+      ],
+      "updates": [
+        {
+          "at": "2026-11-23T09:00:00+01:00",
+          "text": "Nouvelle attaque repoussée ; escortes navales élargies.",
+          "severity": "critical"
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "from": "evt-20261121-fed-divisions-decembre",
+      "to": "evt-20261124-bresil-intervention-real",
+      "type": "causes",
+      "confidence": "medium",
+      "rationale": "La hausse des taux américains pèse sur les devises émergentes."
+    }
+  ]
+}

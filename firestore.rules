@@ -1,0 +1,15 @@
+rules_version = '2';
+// LiveWorld : seul le propriétaire du compte peut lire et écrire ses données.
+// Remplacez VOTRE_EMAIL@exemple.com par l'adresse du compte créé dans Firebase Authentication.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null
+        && request.auth.uid == uid
+        && request.auth.token.email == "VOTRE_EMAIL@exemple.com";
+    }
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
