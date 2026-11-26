@@ -1,5 +1,5 @@
 // Stockage : mode local (IndexedDB du navigateur) ou Firebase (Firestore + cache local)
-import { docId } from './util.js';
+import { docId } from './util.js?v=202611260959';
 
 export const COLLECTIONS = ['events', 'links', 'briefings', 'markets', 'batches'];
 export const emptyDb = () => Object.fromEntries(COLLECTIONS.map(c => [c, {}]));
@@ -7,17 +7,23 @@ export const emptyDb = () => Object.fromEntries(COLLECTIONS.map(c => [c, {}]));
 // ---------- IndexedDB minimal ----------
 const idb = {
   _db: null,
+  // Si IndexedDB est indisponible ou bloqué (navigation privée stricte, mode Isolement…), on bascule en mémoire
   open() {
     if (this._db) return this._db;
     this._db = new Promise((res, rej) => {
-      const r = indexedDB.open('liveworld', 1);
-      r.onupgradeneeded = () => r.result.createObjectStore('kv');
-      r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
-    });
+      const t = setTimeout(() => rej(new Error('IndexedDB ne répond pas')), 4000);
+      try {
+        const r = indexedDB.open('liveworld', 1);
+        r.onupgradeneeded = () => r.result.createObjectStore('kv');
+        r.onsuccess = () => { clearTimeout(t); res(r.result); }; r.onerror = () => { clearTimeout(t); rej(r.error); };
+        r.onblocked = () => { clearTimeout(t); rej(new Error('IndexedDB bloqué')); };
+      } catch (e) { clearTimeout(t); rej(e); }
+    }).catch(e => { console.warn('Stockage en mémoire :', e); this.mem = true; return null; });
     return this._db;
   },
-  async get(k) { const db = await this.open(); return new Promise((res, rej) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); },
-  async set(k, v) { const db = await this.open(); return new Promise((res, rej) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); },
+  mem: false, memStore: {},
+  async get(k) { const db = await this.open(); if (!db) return this.memStore[k]; return new Promise((res, rej) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); },
+  async set(k, v) { const db = await this.open(); if (!db) { this.memStore[k] = v; return; } return new Promise((res, rej) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); },
 };
 
 function applyChanges(db, changes) {
@@ -53,7 +59,7 @@ export class FirebaseStore {
   get role() { return this.profile?.role || null; }
 
   async init(onUser) {
-    this.fb = await import('../vendor/firebase.js');
+    this.fb = await import('../vendor/firebase.js?v=202611260959');
     const { initializeApp, getAuth, getFirestore, onAuthStateChanged, setPersistence, browserLocalPersistence } = this.fb;
     this.app = initializeApp(this.config);
     this.auth = getAuth(this.app);

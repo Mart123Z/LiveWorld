@@ -1,12 +1,12 @@
 // LiveWorld — application principale
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS } from './config.js';
-import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js';
-import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js';
-import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js';
-import { renderBlocks, hydrate, mapPoints } from './blocks.js';
-import { WorldMap } from './map.js';
-import { exchangesStatus, quotesAt, liveQuotes } from './markets.js';
-import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS } from './config.js?v=202611260959';
+import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611260959';
+import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611260959';
+import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611260959';
+import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611260959';
+import { WorldMap } from './map.js?v=202611260959';
+import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611260959';
+import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611260959';
 
 const pref = { get(k, d) { try { const v = localStorage.getItem('lw:' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('lw:' + k, JSON.stringify(v)); } catch {} } };
 const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
@@ -617,11 +617,13 @@ function blockedScreen(store, text) {
 
 // ---------- Démarrage ----------
 async function boot() {
+  window.__lwStarted = true;
   let cfg = null;
-  try { cfg = (await import('./firebase-config.js')).firebaseConfig; } catch {}
+  try { cfg = (await import('./firebase-config.js?t=' + Date.now())).firebaseConfig; } catch {}
   map = new WorldMap($('#map'), $('#mapwrap'), $('#tip'), id => select(id));
   fetch('data/countries-110m.json').then(r => r.json()).then(t => map.setWorld(t)).catch(() => toast('Fond de carte introuvable.', 'err'));
   renderEx(); setInterval(renderEx, 30000);
+  window.__lwBooted = true; // l'interface est en place : les erreurs suivantes s'affichent en notifications
   if (cfg && cfg.apiKey) {
     // Mode comptes : pas d'accès sans connexion
     const fbs = new FirebaseStore(cfg);
@@ -644,4 +646,4 @@ async function boot() {
   // Changement de jour pendant que la page reste ouverte
   let lastToday = today(); setInterval(() => { if (today() !== lastToday) { if (S.D === lastToday) S.D = today(); lastToday = today(); renderAll(); } }, 60e3);
 }
-boot();
+boot().catch(e => { console.error(e); window.__lwBooted ? toast('Erreur au démarrage : ' + esc(e.message || e), 'err') : window.__lwFail?.(e); });

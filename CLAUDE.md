@@ -19,4 +19,6 @@ Site statique (GitHub Pages) sans étape de build : ES modules natifs, biblioth�
 
 ## Commandes
 - Local : `python3 -m http.server 8000`
+- **Avant chaque commit qui touche `js/`, `css/` ou `vendor/`** : `python3 tools/bump-version.py` (ajoute `?v=` à toutes les références internes, pour qu'un navigateur ne mélange jamais anciens et nouveaux fichiers ; `firebase-config.js` est toujours rechargé sans cache).
+- `index.html` contient un diagnostic de démarrage : en cas d'échec, la cause s'affiche à la place de « Chargement… ».
 - Vérifier le schéma : `python3 -c "import json,jsonschema;…"` sur `templates/exemple-batch.json` et `data/demo-*.json`.

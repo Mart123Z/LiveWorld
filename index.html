@@ -14,7 +14,7 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/app.css?v=202611260959">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -72,9 +72,29 @@
 <dialog id="modal"><div class="mbox"><header><h2 id="mTitle"></h2><button class="icon sm" id="mClose" aria-label="Fermer">✕</button></header><div class="mbody" id="mBody"></div></div></dialog>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
-<script src="vendor/d3.min.js"></script>
-<script src="vendor/topojson-client.min.js"></script>
-<script src="vendor/minisearch.min.js"></script>
-<script type="module" src="js/app.js"></script>
+<script>
+// Diagnostic : si l'application ne démarre pas, on affiche la cause au lieu de « Chargement… »
+(function () {
+  var errs = [];
+  function show(msg) {
+    var p = document.getElementById('pane'); if (!p || window.__lwBooted) return;
+    p.innerHTML = '<div class="banner"><b>Le site n’a pas pu démarrer.</b><br>' + msg + '<br><br>Essayez de recharger la page (en vidant le cache : Safari → réglages du site, ou Ctrl+Maj+R sur ordinateur). Si le problème persiste, envoyez une capture de ce message.</div>';
+  }
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  window.__lwFail = function (e) { errs.push(e && (e.message || e) || 'erreur inconnue'); show('Détail : ' + esc(errs.join(' · '))); };
+  window.addEventListener('error', function (e) { if (e.message) { errs.push(e.message + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '')); } else if (e.target && (e.target.src || e.target.href) && !/fonts\.g/.test(e.target.src || e.target.href)) { errs.push('Fichier introuvable : ' + (e.target.src || e.target.href).split('/').slice(-2).join('/')); } }, true);
+  window.addEventListener('unhandledrejection', function (e) { errs.push(e.reason && (e.reason.message || e.reason) || 'promesse rejetée'); });
+  setTimeout(function () {
+    if (window.__lwBooted) return;
+    if (typeof window.d3 === 'undefined') errs.push('bibliothèque d3 non chargée');
+    if (!window.__lwStarted) errs.push('le module principal ne s’est pas exécuté (navigateur trop ancien ? iOS 15.4 ou plus récent requis)');
+    show(errs.length ? 'Détail : ' + esc(errs.join(' · ')) : 'Le démarrage prend plus de temps que prévu (connexion lente ?).');
+  }, 12000);
+})();
+</script>
+<script src="vendor/d3.min.js?v=202611260959"></script>
+<script src="vendor/topojson-client.min.js?v=202611260959"></script>
+<script src="vendor/minisearch.min.js?v=202611260959"></script>
+<script type="module" src="js/app.js?v=202611260959"></script>
 </body>
 </html>
