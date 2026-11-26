@@ -1,7 +1,7 @@
 rules_version = '2';
 // LiveWorld — règles de sécurité Firestore
-// ⚠ Remplacez VOTRE-PROJET par l'identifiant de votre projet Firebase (même valeur que "authDomain" sans ".firebaseapp.com").
-//   L'adresse admin@VOTRE-PROJET.firebaseapp.com correspond à l'identifiant « Admin » de la page de connexion.
+// Projet : liveworld-c40eb. L'adresse admin@liveworld-c40eb.firebaseapp.com correspond à l'identifiant « Admin »
+// de la page de connexion (si vous changez de projet Firebase, remplacez-la ici).
 //
 // Rôles (champ "role" du document users/{uid}) :
 //   admin   : tout, y compris créer, modifier et désactiver des comptes
@@ -12,7 +12,7 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     function signedIn() { return request.auth != null; }
-    function rootAdmin() { return signedIn() && request.auth.token.email == "admin@VOTRE-PROJET.firebaseapp.com"; }
+    function rootAdmin() { return signedIn() && request.auth.token.email == "admin@liveworld-c40eb.firebaseapp.com"; }
     function profilePath() { return /databases/$(database)/documents/users/$(request.auth.uid); }
     function profile() { return get(profilePath()).data; }
     function active() { return signedIn() && exists(profilePath()) && profile().get('disabled', false) != true; }
