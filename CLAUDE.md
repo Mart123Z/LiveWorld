@@ -4,7 +4,9 @@ Site statique (GitHub Pages) sans étape de build : ES modules natifs, biblioth�
 
 ## Architecture
 - `js/model.js` : cœur métier. `analyzeBatch` (validation + détection de doublons) puis `applyBatch` (fusion additive) produisent des `changes` par collection ; `snapshot`/`visibleAt` reconstituent l'état à une date (journaux `severity_log`, `status_log`, `added_at`/`superseded_at`).
-- `js/store.js` : `LocalStore` (IndexedDB, clé `db`) ou `FirebaseStore` (Firestore `users/{uid}/{collection}/{id}` = `{ json, _ts, deleted }`, synchronisation incrémentale sur `_ts` + cache IndexedDB). Les objets sont sérialisés en JSON car Firestore refuse les tableaux imbriqués.
+- `js/store.js` : `LocalStore` (IndexedDB, clé `db`) ou `FirebaseStore` (base partagée Firestore `spaces/main/{collection}/{id}` = `{ json, _ts, deleted }`, synchronisation incrémentale sur `_ts` + cache IndexedDB). Les objets sont sérialisés en JSON car Firestore refuse les tableaux imbriqués.
+- Comptes : profils `users/{uid}` = `{ username, role: admin|editor|reader, disabled, … }`. Identifiant → e-mail technique `identifiant@<authDomain>`. L'Admin racine (`admin@<authDomain>`, codé dans `firestore.rules`) crée son profil à la première connexion. Création de comptes sans Cloud Functions : instance Firebase secondaire en mémoire (`createUser`). Pas d'inscription sur la page de connexion.
+- Droits côté interface : `canWrite()` / `isAdmin()` dans `app.js` ; la sécurité réelle est dans `firestore.rules` (toute nouvelle collection doit y être ajoutée).
 - Collections : `events`, `links` (id `from__to__type`), `briefings` (id `date__batch`), `markets` (id `date__asset`), `batches`.
 - `js/exporter.js` : contexte Markdown pour Claude, résumé, sauvegarde `liveworld.backup/v1`, prompts.
 - `js/blocks.js` : rendu des blocs libres ; tout texte passe par `esc`/`md` ; URL acceptées uniquement en https.

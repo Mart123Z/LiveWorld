@@ -1,13 +1,47 @@
 rules_version = '2';
-// LiveWorld : seul le propriétaire du compte peut lire et écrire ses données.
-// Remplacez VOTRE_EMAIL@exemple.com par l'adresse du compte créé dans Firebase Authentication.
+// LiveWorld — règles de sécurité Firestore
+// ⚠ Remplacez VOTRE-PROJET par l'identifiant de votre projet Firebase (même valeur que "authDomain" sans ".firebaseapp.com").
+//   L'adresse admin@VOTRE-PROJET.firebaseapp.com correspond à l'identifiant « Admin » de la page de connexion.
+//
+// Rôles (champ "role" du document users/{uid}) :
+//   admin   : tout, y compris créer, modifier et désactiver des comptes
+//   editor  : lire, importer, lier, supprimer des événements
+//   reader  : lecture seule
+// Un compte Firebase sans document users/{uid} (ou désactivé) n'a accès à rien.
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{uid}/{document=**} {
-      allow read, write: if request.auth != null
-        && request.auth.uid == uid
-        && request.auth.token.email == "VOTRE_EMAIL@exemple.com";
+
+    function signedIn() { return request.auth != null; }
+    function rootAdmin() { return signedIn() && request.auth.token.email == "admin@VOTRE-PROJET.firebaseapp.com"; }
+    function profilePath() { return /databases/$(database)/documents/users/$(request.auth.uid); }
+    function profile() { return get(profilePath()).data; }
+    function active() { return signedIn() && exists(profilePath()) && profile().get('disabled', false) != true; }
+    function isAdmin() { return rootAdmin() || (active() && profile().get('role', '') == 'admin'); }
+    function isEditor() { return isAdmin() || (active() && profile().get('role', '') == 'editor'); }
+    function isMember() { return isEditor() || (active() && profile().get('role', '') == 'reader'); }
+    function validProfile() {
+      let d = request.resource.data;
+      return d.role in ['admin', 'editor', 'reader']
+        && d.username is string && d.username.size() >= 2 && d.username.size() <= 40;
     }
+
+    // Comptes
+    match /users/{uid} {
+      allow read: if isAdmin() || (signedIn() && request.auth.uid == uid);
+      allow create, update: if isAdmin() && validProfile();
+      // Chaque utilisateur peut seulement enregistrer sa date de dernière connexion
+      allow update: if signedIn() && request.auth.uid == uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['last_login_at']);
+      allow delete: if isAdmin() && request.auth.uid != uid;
+    }
+
+    // Base partagée LiveWorld
+    match /spaces/main/{col}/{id} {
+      allow read: if isMember();
+      allow write: if isEditor() && col in ['events', 'links', 'briefings', 'markets', 'batches'];
+    }
+
+    // Tout le reste est interdit
     match /{document=**} {
       allow read, write: if false;
     }

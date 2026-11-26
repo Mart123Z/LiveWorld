@@ -11,7 +11,7 @@ Site ──Exporter──► contexte.md + prompt ──► Claude (Projet LiveW
 ```
 
 - Hébergement : **GitHub Pages** (gratuit), site 100 % statique, aucune dépendance externe hormis les polices.
-- Données : **Firebase Firestore** (plan gratuit Spark) pour les retrouver sur tous vos appareils, ou **mode local** (navigateur) sans aucune configuration.
+- Données et comptes : **Firebase** (plan gratuit Spark). Accès réservé aux comptes créés par l'Admin, avec trois rôles (administrateur, éditeur, lecteur). Sans Firebase, le site fonctionne en **mode local**, sans compte.
 - Coût : 0 € en plus de votre abonnement Claude.
 
 ---
@@ -22,21 +22,75 @@ Site ──Exporter──► contexte.md + prompt ──► Claude (Projet LiveW
 2. *Source* : **Deploy from a branch** · *Branch* : **main** · dossier **/ (root)** → **Save**.
 3. Après une à deux minutes, le site est disponible à l'adresse **https://mart123z.github.io/LiveWorld/**.
 
-À ce stade, le site fonctionne déjà en **mode local** : les données restent dans le navigateur utilisé. Cliquez sur **Charger la démo** pour le découvrir (les données de démo sont fictives et se retirent dans *Réglages*).
+À ce stade, le site fonctionne en **mode local**, sans compte : les données restent dans le navigateur utilisé. Cliquez sur **Charger la démo** pour le découvrir (les données de démo sont fictives et se retirent dans *Réglages*). L'étape 2 active les comptes.
 
-## 2. Brancher Firebase pour synchroniser vos appareils (15 min)
+## 2. Activer Firebase et les comptes (20 min)
 
-1. Allez sur **console.firebase.google.com** → **Créer un projet** (nom : `liveworld`). Google Analytics n'est pas nécessaire.
-2. **Firestore** : menu *Build* → **Firestore Database** → **Créer une base de données** → emplacement en Europe (par ex. `europe-west9` Paris) → **mode production**.
-3. **Règles** : onglet *Règles* de Firestore → collez le contenu de [`firestore.rules`](firestore.rules) en remplaçant `VOTRE_EMAIL@exemple.com` par votre adresse → **Publier**.
-4. **Authentification** : *Build* → **Authentication** → **Commencer** → onglet *Méthode de connexion* → activez **Adresse e-mail/Mot de passe**. Onglet *Utilisateurs* → **Ajouter un utilisateur** avec la même adresse et un mot de passe solide.
-5. **Configuration web** : ⚙ *Paramètres du projet* → *Vos applications* → icône **Web `</>`** → nom `liveworld` (pas besoin de Firebase Hosting) → copiez l'objet `firebaseConfig`.
-6. Sur GitHub, ouvrez [`js/firebase-config.js`](js/firebase-config.js) → icône crayon → remplacez `export const firebaseConfig = null;` par la configuration copiée (voir l'exemple dans le fichier) → **Commit changes**.
-7. Rechargez le site : un écran de connexion apparaît. Connectez-vous avec le compte créé à l'étape 4.
+Une fois Firebase configuré, **le site n'est accessible qu'avec un compte**. La page de connexion permet uniquement de se connecter : les comptes sont créés par l'**Admin**, depuis le site. Tous les comptes partagent la même base.
 
-> La configuration Firebase n'est pas secrète (elle est visible dans tout site Firebase). La protection vient des **règles** : seul votre compte peut lire et écrire vos données, stockées sous `users/<votre-uid>/…`.
->
-> Vous aviez commencé en mode local ? *Réglages* → **Envoyer la base locale de ce navigateur vers Firebase**.
+| Rôle | Droits |
+|---|---|
+| **Administrateur** | Tout, y compris créer, modifier, désactiver et supprimer des comptes, restaurer ou vider la base |
+| **Éditeur** | Consulter, importer les lots de Claude, créer et supprimer des liens et des événements, charger la démo |
+| **Lecteur** | Consulter, rechercher et exporter (lecture seule) |
+
+### 2.1 Créer le projet Firebase
+
+1. Allez sur **console.firebase.google.com** → **Créer un projet** (nom : `liveworld`). Google Analytics n'est pas nécessaire. Restez sur le plan gratuit **Spark**.
+2. Notez l'**identifiant du projet** (par ex. `liveworld-1a2b3`) : il apparaît dans ⚙ *Paramètres du projet*.
+
+### 2.2 Activer la connexion par identifiant et mot de passe
+
+1. *Build* → **Authentication** → **Commencer**.
+2. Onglet *Méthode de connexion* → **Adresse e-mail/Mot de passe** → **Activer** (laissez « Lien par e-mail » désactivé) → **Enregistrer**.
+
+> Le site transforme chaque identifiant en adresse technique : `Admin` → `admin@<identifiant-du-projet>.firebaseapp.com`, `marie` → `marie@<identifiant-du-projet>.firebaseapp.com`. Aucun e-mail n'est jamais envoyé.
+
+### 2.3 Créer le compte Admin (une seule fois, dans la console)
+
+1. *Authentication* → onglet **Utilisateurs** → **Ajouter un utilisateur**.
+2. Adresse e-mail : `admin@<identifiant-du-projet>.firebaseapp.com` (ex. `admin@liveworld-1a2b3.firebaseapp.com`).
+3. Mot de passe : un mot de passe solide (12 caractères ou plus). C'est le mot de passe du compte **Admin**.
+
+C'est le seul compte à créer dans la console : tous les autres se créent depuis le site.
+
+### 2.4 Créer la base Firestore et publier les règles
+
+1. *Build* → **Firestore Database** → **Créer une base de données** → emplacement en Europe (par ex. `europe-west9` Paris) → **mode production**.
+2. Onglet **Règles** → remplacez tout par le contenu de [`firestore.rules`](firestore.rules).
+3. Dans ce texte, remplacez `VOTRE-PROJET` par votre identifiant de projet (ex. `admin@liveworld-1a2b3.firebaseapp.com`) → **Publier**.
+
+Ces règles garantissent que :
+- un visiteur non connecté ne peut rien lire ni écrire ;
+- un compte sans fiche dans la collection `users`, ou désactivé, n'a accès à rien (même s'il a réussi à créer un compte Firebase par un autre moyen) ;
+- seul un administrateur peut créer, modifier ou supprimer des comptes ;
+- seuls les administrateurs et les éditeurs peuvent modifier la base partagée (`spaces/main/…`).
+
+### 2.5 Relier le site à Firebase
+
+1. ⚙ *Paramètres du projet* → *Vos applications* → icône **Web `</>`** → nom `liveworld` (pas besoin de Firebase Hosting) → copiez l'objet `firebaseConfig`.
+2. Sur GitHub, ouvrez [`js/firebase-config.js`](js/firebase-config.js) → icône crayon → remplacez `export const firebaseConfig = null;` par la configuration copiée (voir l'exemple dans le fichier) → **Commit changes**.
+
+> La configuration Firebase n'est pas secrète : elle est visible dans tout site Firebase. La sécurité repose sur les règles de l'étape 2.4.
+
+### 2.6 Première connexion et création des comptes
+
+1. Ouvrez le site : l'écran **Connexion à LiveWorld** apparaît. Identifiant : `Admin`, mot de passe : celui de l'étape 2.3. Le profil administrateur est créé automatiquement.
+2. ⚙ **Réglages** → **Gérer les comptes** → *Créer un compte* :
+   - choisissez un identifiant (minuscules, chiffres, `.`, `_` ou `-`) ;
+   - choisissez un rôle ;
+   - tapez un mot de passe provisoire ou cliquez sur **Générer** ;
+   - transmettez l'identifiant et le mot de passe à la personne.
+3. Chaque utilisateur peut changer son mot de passe : ⚙ **Réglages** → **Changer mon mot de passe**. Faites-le aussi pour l'Admin si vous le souhaitez.
+
+Gestion courante (⚙ **Réglages** → **Gérer les comptes**) :
+- **Changer le rôle** : liste déroulante, effet immédiat.
+- **Désactiver / Réactiver** : un compte désactivé ne peut plus rien lire ; il est refusé dès sa prochaine ouverture du site.
+- **Supprimer** : retire l'accès. Pour libérer complètement l'identifiant, supprimez aussi l'utilisateur dans la console Firebase (*Authentication → Utilisateurs*).
+- **Mot de passe oublié** : sans serveur payant, le site ne peut pas réinitialiser le mot de passe d'un autre compte. Supprimez le compte dans le site **et** dans la console Firebase, puis recréez-le avec le même identifiant et un nouveau mot de passe provisoire.
+- **Mot de passe Admin oublié** : console Firebase → *Authentication → Utilisateurs* → supprimez `admin@…`, puis recréez-le (étape 2.3). Le profil administrateur et les données sont conservés.
+
+> Vous aviez commencé en mode local ? Connecté en Admin, dans le navigateur qui contient ces données : ⚙ **Réglages** → **Envoyer la base locale de ce navigateur vers Firebase**.
 
 ## 3. Créer le Projet Claude « LiveWorld » (5 min, une seule fois)
 
@@ -98,14 +152,14 @@ js/app.js                  interface
 js/model.js                Time-Machine, chaînes de causalité, validation et fusion des lots
 js/exporter.js             contexte Claude, résumés, sauvegarde, prompts
 js/blocks.js               rendu des blocs libres (aucun HTML brut accepté)
-js/store.js                stockage local (IndexedDB) ou Firebase (Firestore + cache)
+js/store.js                stockage local (IndexedDB) ou Firebase (Firestore + cache), comptes et rôles
 js/map.js, js/markets.js   carte, places boursières et cotations
 js/config.js               vocabulaires (thèmes, sévérités, types de liens…)
 js/firebase-config.js      votre configuration Firebase
 templates/                 instructions Claude, prompts, schéma JSON, exemple de lot
 data/                      fond de carte et lots de démonstration
 vendor/                    d3, topojson, MiniSearch, Mermaid, Firebase (copies locales)
-firestore.rules            règles de sécurité à publier dans Firebase
+firestore.rules            règles de sécurité à publier dans Firebase (rôles, base partagée)
 ```
 
 Tester en local : `python3 -m http.server 8000` à la racine, puis http://localhost:8000.

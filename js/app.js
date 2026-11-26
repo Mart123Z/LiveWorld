@@ -1,7 +1,7 @@
 // LiveWorld — application principale
 import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS } from './config.js';
 import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js';
-import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS } from './store.js';
+import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js';
 import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js';
 import { renderBlocks, hydrate, mapPoints } from './blocks.js';
 import { WorldMap } from './map.js';
@@ -9,7 +9,13 @@ import { exchangesStatus, quotesAt, liveQuotes } from './markets.js';
 import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js';
 
 const pref = { get(k, d) { try { const v = localStorage.getItem('lw:' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('lw:' + k, JSON.stringify(v)); } catch {} } };
-const S = { db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
+const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
+
+// ---------- Droits ----------
+// local : mode sans Firebase (tous les droits) · admin · editor · reader (lecture seule)
+const canWrite = () => ['local', 'admin', 'editor'].includes(S.role);
+const isAdmin = () => S.role === 'admin';
+const displayName = p => p?.username === 'admin' ? 'Admin' : (p?.username || '');
 
 // ---------- Utilitaires d'interface ----------
 const sevTag = s => `<span class="sev ${esc(s)}">${esc(SEV[s] || s)}</span>`;
@@ -46,6 +52,7 @@ function renderHeader() {
   const counts = {}; for (const e of liveEvents(S.db)) for (const t of e.themes || []) counts[t] = (counts[t] || 0) + 1;
   $('#themeChips').innerHTML = `<button class="chip" data-th="" aria-pressed="${!S.themes.size}">Tous les thèmes</button>` + THEMES.filter(([id]) => counts[id] || S.themes.has(id)).map(([id, l]) => `<button class="chip" data-th="${id}" aria-pressed="${S.themes.has(id)}">${esc(l)}</button>`).join('');
   $$('#themeChips [data-th]').forEach(b => b.onclick = () => toggleTheme(b.dataset.th));
+  $('#importBtn').hidden = !canWrite();
   const unseen = Object.values(S.db.batches).filter(b => ts(b.imported_at) > pref.get('seenBatches', 0)).length;
   $('#badge').textContent = unseen || '';
 }
@@ -107,7 +114,7 @@ const evButton = (v, extra = '') => `<button data-go="${esc(v.id)}">${sevTag(v.s
 function chainItem(id, info, dirLabel) {
   const e = S.db.events[id]; if (!e) return '';
   const l = info.link, lt = LINK_TYPES[l.type];
-  return `<div class="ci"><button class="go" data-go="${esc(id)}">${sevTag(snapshot(e).sev)} ${esc(e.title)}</button><button class="x" data-unlink="${esc(l.id)}" aria-label="Supprimer ce lien" title="Supprimer ce lien">×</button><span class="meta"><span class="rel-type">${esc(dirLabel(lt))}</span> · ${esc(fmtDay(e.date, { day: 'numeric', month: 'short', year: 'numeric' }))}${info.depth > 1 ? ` · via ${esc(S.db.events[info.via]?.title?.slice(0, 40) || '')}…` : ''}${l.rationale ? ' · ' + esc(l.rationale) : ''}${l.origin === 'manuel' ? ' · ajouté manuellement' : ''}</span></div>`;
+  return `<div class="ci"><button class="go" data-go="${esc(id)}">${sevTag(snapshot(e).sev)} ${esc(e.title)}</button>${canWrite() ? `<button class="x" data-unlink="${esc(l.id)}" aria-label="Supprimer ce lien" title="Supprimer ce lien">×</button>` : ''}<span class="meta"><span class="rel-type">${esc(dirLabel(lt))}</span> · ${esc(fmtDay(e.date, { day: 'numeric', month: 'short', year: 'numeric' }))}${info.depth > 1 ? ` · via ${esc(S.db.events[info.via]?.title?.slice(0, 40) || '')}…` : ''}${l.rationale ? ' · ' + esc(l.rationale) : ''}${l.origin === 'manuel' ? ' · ajouté manuellement' : ''}</span></div>`;
 }
 
 function paneDossier() {
@@ -134,12 +141,12 @@ function paneDossier() {
   <h3>Sources vérifiées (${v.srcs.length})</h3><ul class="src">${v.srcs.map(srcItem).join('') || '<li class="meta">Aucune source à cette date.</li>'}</ul>
   <h3>Chronologie des mises à jour</h3><ul class="tl">${v.ups.map(u => `<li class="${esc(u.severity || '')}"><span class="meta">${esc(fmtDT(u.at))}</span><br>${esc(u.text)}${safeUrl(u.source_url) && !isDemoUrl(u.source_url) ? ' ' + extLink(u.source_url, '↗') : ''}</li>`).join('') || '<li class="meta">Aucune.</li>'}</ul>
   <h3>Impacts économiques</h3><div class="imp">${v.imps.map(i => impCard(i)).join('') || '<p class="meta">Aucun impact évalué.</p>'}</div>
-  <h3>Chaîne de causalité <button class="btn" id="addLink" style="min-height:34px;padding:4px 10px;font-size:13px">+ Lier</button></h3>
+  <h3>Chaîne de causalité ${canWrite() ? '<button class="btn" id="addLink" style="min-height:34px;padding:4px 10px;font-size:13px">+ Lier</button>' : ''}</h3>
   ${ch.up.size ? `<p class="meta">En amont (causes, antécédents)</p><div class="chainlist">${sortByDate(ch.up).map(([id, info]) => chainItem(id, info, lt => lt.back.replace('est causé par', 'cause'))).join('')}</div>` : ''}
   ${ch.down.size ? `<p class="meta" style="margin-top:10px">En aval (conséquences, suites)</p><div class="chainlist">${sortByDate(ch.down).map(([id, info]) => chainItem(id, info, lt => ({ causes: 'conséquence', escalates: 'aggravation', responds_to: 'réaction', follows: 'suite' })[info.link.type] || lt.label)).join('')}</div>` : ''}
   ${ch.rel.length ? `<p class="meta" style="margin-top:10px">Liens thématiques</p><div class="chainlist">${ch.rel.map(r => chainItem(r.other, { link: r.link, depth: 1 }, () => 'lié')).join('')}</div>` : ''}
   ${!ch.up.size && !ch.down.size && !ch.rel.length ? '<p class="meta">Aucun lien. Les liens peuvent relier des événements de n’importe quelle date.</p>' : ''}
-  <div class="row"><button class="btn" id="copyEv">Copier la fiche</button>${e.location ? '<button class="btn" id="centerEv">Centrer la carte</button>' : ''}<button class="btn danger" id="delEv">Supprimer</button></div>
+  <div class="row"><button class="btn" id="copyEv">Copier la fiche</button>${e.location ? '<button class="btn" id="centerEv">Centrer la carte</button>' : ''}${canWrite() ? '<button class="btn danger" id="delEv">Supprimer</button>' : ''}</div>
   <details class="hist"><summary>Historique et provenance (${plural(batches.length, 'lot')}, ${plural(hist.length, 'modification')})</summary>
     <ul class="tl small" style="margin-top:8px">${hist.map(h => `<li><span class="meta">${esc(fmtDT(h.at))}</span> ${esc({ title: 'Titre', summary: 'Résumé', date: 'Date', severity: 'Sévérité', status: 'Statut', location: 'Lieu', ended_on: 'Date de fin' }[h.field] || h.field)} modifié${h.from && typeof h.from === 'string' ? ` (avant : ${esc(SEV[h.from] || STATUS[h.from] || h.from.slice(0, 160))})` : ''}</li>`).join('')}
     ${batches.map(b => `<li><span class="meta">${esc(fmtDT(b.generated_at))}</span> Lot ${esc(b.id)}${b.request ? ' — ' + esc(b.request) : ''}</li>`).join('')}</ul>
@@ -154,6 +161,7 @@ function paneOverview() {
   ${vis.length > 10 ? `<div class="row"><button class="lnk" data-tab="flux">Voir les ${vis.length} événements</button></div>` : ''}`;
 }
 function welcomeHtml() {
+  if (!canWrite()) return `<div class="welcome"><h2>Bienvenue sur LiveWorld</h2><p>La base est encore vide. Les événements apparaîtront dès qu’un éditeur aura importé une veille.</p></div>`;
   return `<div class="welcome"><h2>Bienvenue sur LiveWorld</h2>
   <p>La base est vide. Pour commencer :</p>
   <ol><li><b>Exporter → Copier le prompt du jour</b>, puis demandez la veille à Claude dans votre Projet « LiveWorld ».</li>
@@ -240,7 +248,7 @@ function renderPane() {
     $('#addLink', p) && ($('#addLink', p).onclick = () => openLinkPicker(e));
     $('#copyEv', p) && ($('#copyEv', p).onclick = async () => toast(await copyText(eventMd(S.db, e)) ? 'Fiche copiée.' : 'Copie impossible.'));
     $('#centerEv', p) && ($('#centerEv', p).onclick = () => map.focus(e.location.lng, e.location.lat));
-    $('#delEv', p).onclick = () => confirmBox('Supprimer cet événement ?', `« ${esc(e.title)} » et ses liens seront retirés de la base. Un futur lot de Claude utilisant le même identifiant le recréera.`, 'Supprimer', () => {
+    if ($('#delEv', p)) $('#delEv', p).onclick = () => confirmBox('Supprimer cet événement ?', `« ${esc(e.title)} » et ses liens seront retirés de la base. Un futur lot de Claude utilisant le même identifiant le recréera.`, 'Supprimer', () => {
       const links = Object.values(S.db.links).filter(l => l.from === e.id || l.to === e.id).map(l => ({ id: l.id, _deleted: true }));
       S.sel = null; save({ events: [{ id: e.id, _deleted: true }], links }, 'Événement supprimé.');
     });
@@ -388,7 +396,7 @@ function openImport() {
     }
   });
 }
-$('#importBtn').onclick = openImport;
+$('#importBtn').onclick = () => canWrite() && openImport();
 
 // ---------- Export ----------
 function openExport() {
@@ -444,49 +452,118 @@ $('#bell').onclick = () => {
 async function openSettings() {
   const fb = S.store.mode === 'firebase';
   const counts = COLLECTIONS.map(c => `${Object.keys(S.db[c]).length} ${({ events: 'événements', links: 'liens', briefings: 'briefings', markets: 'cotations', batches: 'lots' })[c]}`).join(' · ');
-  const local = fb ? await LocalStore.peekLocal() : null;
+  const local = fb && isAdmin() ? await LocalStore.peekLocal() : null;
   const localN = local ? Object.keys(local.events || {}).length : 0;
   const demoN = Object.values(S.db.events).filter(e => e.demo).length;
+  const p = S.store.profile;
   openModal('Réglages', `
-    <h3>Stockage</h3>
-    <p>${fb ? `Firebase · connecté en tant que <b>${esc(S.store.user?.email || '')}</b>. Les données sont synchronisées entre vos appareils.` : 'Local · les données restent dans ce navigateur. Configurez Firebase (voir README) pour les retrouver sur tous vos appareils.'}</p>
-    <div class="row">${fb ? `<button class="btn" id="sOut">Se déconnecter</button>${localN ? `<button class="btn" id="sPush">Envoyer la base locale de ce navigateur vers Firebase (${localN} événements)</button>` : ''}` : (pref.get('forceLocal', false) ? '<button class="btn" id="sUseFb">Utiliser Firebase</button>' : '')}</div>
+    ${fb ? `<h3>Mon compte</h3>
+    <p>Connecté en tant que <b>${esc(displayName(p))}</b> · ${esc(ROLES[S.role] || S.role)}</p>
+    <div class="row"><button class="btn" id="sPwd">Changer mon mot de passe</button><button class="btn" id="sOut">Se déconnecter</button></div>
+    ${isAdmin() ? `<h3>Comptes</h3><p class="meta">Seul un administrateur peut créer des comptes. La page de connexion ne permet que de se connecter.</p><div class="row"><button class="btn pri" id="sUsers">Gérer les comptes</button></div>` : ''}`
+    : `<h3>Stockage</h3><p>Mode local : les données restent dans ce navigateur. Configurez Firebase (voir README) pour activer les comptes et la synchronisation.</p>`}
     <h3>Données</h3><p class="meta">${counts}</p>
-    <div class="row"><button class="btn" id="sDemo">Charger la démo</button>${demoN ? `<button class="btn" id="sDemoDel">Retirer les données de démo (${demoN})</button>` : ''}</div>
-    <div class="row"><label class="btn" style="display:inline-flex;align-items:center;gap:8px">Restaurer une sauvegarde<input type="file" id="sRestore" accept=".json" hidden></label><button class="btn danger" id="sWipe">Vider la base</button></div>
-    <h3>Modèles pour Claude</h3>
+    ${canWrite() ? `<div class="row"><button class="btn" id="sDemo">Charger la démo</button>${demoN ? `<button class="btn" id="sDemoDel">Retirer les données de démo (${demoN})</button>` : ''}</div>` : '<p class="meta">Votre compte est en lecture seule. Les exports restent disponibles.</p>'}
+    ${(fb ? isAdmin() : true) ? `<div class="row"><label class="btn" style="display:inline-flex;align-items:center;gap:8px">Restaurer une sauvegarde<input type="file" id="sRestore" accept=".json" hidden></label><button class="btn danger" id="sWipe">Vider la base</button>${localN ? `<button class="btn" id="sPush">Envoyer la base locale de ce navigateur vers Firebase (${localN} événements)</button>` : ''}</div>` : ''}
+    ${canWrite() ? `<h3>Modèles pour Claude</h3>
     <p class="meta">À mettre dans votre Projet Claude « LiveWorld » (voir README).</p>
-    <div class="row"><button class="btn" id="sCopyIns">Copier les instructions</button><a class="btn" href="templates/liveworld-batch.schema.json" download>Schéma JSON</a><a class="btn" href="templates/exemple-batch.json" download>Exemple de lot</a><a class="btn" href="templates/PROMPT_QUOTIDIEN.md" target="_blank">Prompts</a></div>`, b => {
-    $('#sOut', b) && ($('#sOut', b).onclick = async () => { await S.store.signOut(); location.reload(); });
-    $('#sUseFb', b) && ($('#sUseFb', b).onclick = () => { pref.set('forceLocal', false); location.reload(); });
-    $('#sPush', b) && ($('#sPush', b).onclick = () => confirmBox('Envoyer la base locale ?', `Les ${localN} événements de ce navigateur seront fusionnés dans Firebase (les documents de même identifiant seront remplacés).`, 'Envoyer', async () => {
+    <div class="row"><button class="btn" id="sCopyIns">Copier les instructions</button><a class="btn" href="templates/liveworld-batch.schema.json" download>Schéma JSON</a><a class="btn" href="templates/exemple-batch.json" download>Exemple de lot</a><a class="btn" href="templates/PROMPT_QUOTIDIEN.md" target="_blank">Prompts</a></div>` : ''}`, b => {
+    const on = (sel, fn) => { const el = $(sel, b); if (el) el.onclick = fn; };
+    on('#sOut', async () => { await S.store.signOut(); location.reload(); });
+    on('#sPwd', openPasswordChange);
+    on('#sUsers', openUsers);
+    on('#sPush', () => confirmBox('Envoyer la base locale ?', `Les ${localN} événements de ce navigateur seront fusionnés dans la base partagée (les documents de même identifiant seront remplacés).`, 'Envoyer', async () => {
       const ch = {}; for (const c of COLLECTIONS) ch[c] = Object.values(local[c] || {}); await save(ch, 'Base locale envoyée vers Firebase.'); }, false));
-    $('#sDemo', b).onclick = () => { closeModal(); loadDemo(); };
-    $('#sDemoDel', b) && ($('#sDemoDel', b).onclick = () => {
+    on('#sDemo', () => fb ? confirmBox('Charger la démo dans la base partagée ?', 'Tous les comptes verront ces 16 événements fictifs (marqués DÉMO) jusqu’à ce que vous les retiriez dans Réglages.', 'Charger', () => loadDemo(), false) : (closeModal(), loadDemo()));
+    on('#sDemoDel', () => {
       const ev = Object.values(S.db.events).filter(e => e.demo).map(e => ({ id: e.id, _deleted: true })); const ids = new Set(ev.map(e => e.id));
       save({ events: ev, links: Object.values(S.db.links).filter(l => ids.has(l.from) || ids.has(l.to)).map(l => ({ id: l.id, _deleted: true })), briefings: Object.values(S.db.briefings).filter(x => x.demo).map(x => ({ id: x.id, _deleted: true })), batches: Object.values(S.db.batches).filter(x => x.demo).map(x => ({ id: x.id, _deleted: true })), markets: Object.values(S.db.markets).filter(m => S.db.batches[m.batch]?.demo).map(m => ({ id: m.id, _deleted: true })) }, 'Données de démo retirées.');
       S.sel = null; closeModal();
     });
-    $('#sRestore', b).onchange = async ev => {
+    const rs = $('#sRestore', b); if (rs) rs.onchange = async ev => {
       try {
         const j = JSON.parse(await readFile(ev.target.files[0]));
         if (j.schema !== BACKUP_SCHEMA || !j.db) throw new Error('ce fichier n’est pas une sauvegarde LiveWorld');
-        confirmBox('Restaurer la sauvegarde ?', `Sauvegarde du ${esc(fmtDT(j.exported_at))} : ${Object.keys(j.db.events || {}).length} événements. <b>La base actuelle sera entièrement remplacée.</b>`, 'Restaurer', async () => {
+        confirmBox('Restaurer la sauvegarde ?', `Sauvegarde du ${esc(fmtDT(j.exported_at))} : ${Object.keys(j.db.events || {}).length} événements. <b>La base actuelle sera entièrement remplacée${fb ? ' pour tous les comptes' : ''}.</b>`, 'Restaurer', async () => {
           const db = emptyDb(); for (const c of COLLECTIONS) db[c] = j.db[c] || {};
           await S.store.replaceAll(db); S.db = S.store.db; S.miniDirty = true; S.sel = null; toast('Sauvegarde restaurée.', 'ok'); renderAll();
         });
       } catch (err) { toast('Restauration impossible : ' + esc(err.message), 'err'); }
     };
-    $('#sWipe', b).onclick = () => openModal('Vider la base', `<p>Toutes les données seront supprimées${fb ? ' de Firebase' : ' de ce navigateur'}. Pensez à <b>exporter une sauvegarde</b> avant.</p><label class="f">Tapez SUPPRIMER pour confirmer<input type="text" id="wTxt" autocomplete="off"></label><div class="row"><button class="btn danger" id="wOk">Vider définitivement</button></div>`, m => {
+    on('#sWipe', () => openModal('Vider la base', `<p>Toutes les données seront supprimées${fb ? ' de la base partagée, pour tous les comptes' : ' de ce navigateur'}. Pensez à <b>exporter une sauvegarde</b> avant.</p><label class="f">Tapez SUPPRIMER pour confirmer<input type="text" id="wTxt" autocomplete="off"></label><div class="row"><button class="btn danger" id="wOk">Vider définitivement</button></div>`, m => {
       $('#wOk', m).onclick = async () => { if ($('#wTxt', m).value.trim() !== 'SUPPRIMER') return toast('Confirmation incorrecte.', 'err'); await S.store.replaceAll(emptyDb()); S.db = S.store.db; S.sel = null; S.miniDirty = true; closeModal(); toast('Base vidée.', 'ok'); renderAll(); };
-    });
-    $('#sCopyIns', b).onclick = async () => { try { const t = await (await fetch('templates/INSTRUCTIONS_CLAUDE.md')).text(); toast(await copyText(t) ? 'Instructions copiées.' : 'Copie impossible.'); } catch { toast('Fichier introuvable.', 'err'); } };
+    }));
+    on('#sCopyIns', async () => { try { const t = await (await fetch('templates/INSTRUCTIONS_CLAUDE.md')).text(); toast(await copyText(t) ? 'Instructions copiées.' : 'Copie impossible.'); } catch { toast('Fichier introuvable.', 'err'); } });
   });
 }
 $('#settingsBtn').onclick = openSettings;
 
+const authError = err => ({
+  'auth/invalid-credential': 'identifiant ou mot de passe incorrect.', 'auth/wrong-password': 'mot de passe incorrect.', 'auth/user-not-found': 'identifiant inconnu.',
+  'auth/too-many-requests': 'trop de tentatives, réessayez dans quelques minutes.', 'auth/email-already-in-use': 'cet identifiant existe déjà.',
+  'auth/weak-password': 'mot de passe trop faible (8 caractères minimum).', 'auth/operation-not-allowed': 'la connexion par e-mail/mot de passe n’est pas activée dans Firebase.',
+  'auth/network-request-failed': 'connexion réseau impossible.', 'permission-denied': 'action refusée par les règles Firestore (droits insuffisants ou règles non publiées).',
+}[err?.code] || err?.message || String(err));
+
+function openPasswordChange() {
+  openModal('Changer mon mot de passe', `<form id="pf"><label class="f">Mot de passe actuel<input type="password" id="pCur" autocomplete="current-password" required></label>
+    <label class="f">Nouveau mot de passe (8 caractères minimum)<input type="password" id="pNew" autocomplete="new-password" minlength="8" required></label>
+    <label class="f">Confirmer<input type="password" id="pNew2" autocomplete="new-password" required></label>
+    <div class="row"><button class="btn pri" type="submit">Enregistrer</button></div><p class="meta" id="pErr"></p></form>`, b => {
+    $('#pf', b).onsubmit = async ev => {
+      ev.preventDefault(); const n = $('#pNew', b).value;
+      if (n.length < 8) return $('#pErr', b).textContent = '8 caractères minimum.';
+      if (n !== $('#pNew2', b).value) return $('#pErr', b).textContent = 'Les deux mots de passe ne correspondent pas.';
+      $('#pErr', b).textContent = 'Enregistrement…';
+      try { await S.store.changePassword($('#pCur', b).value, n); closeModal(); toast('Mot de passe modifié.', 'ok'); }
+      catch (err) { $('#pErr', b).textContent = 'Échec : ' + authError(err); }
+    };
+  });
+}
+
+// ---------- Gestion des comptes (Admin) ----------
+async function openUsers() {
+  openModal('Comptes', '<p class="meta">Chargement…</p>');
+  let users = [];
+  try { users = await S.store.listUsers(); } catch (err) { $('#mBody').innerHTML = `<p class="toast err" style="animation:none">Lecture des comptes impossible : ${esc(authError(err))}</p>`; return; }
+  const me = S.store.user.uid;
+  const roleSel = (u) => `<select data-role="${esc(u.uid)}" ${u.uid === me || u.username === 'admin' ? 'disabled' : ''}>${Object.entries(ROLES).map(([k, l]) => `<option value="${k}" ${u.role === k ? 'selected' : ''}>${l}</option>`).join('')}</select>`;
+  openModal('Comptes', `
+    <h3>Créer un compte</h3>
+    <form id="uf" autocomplete="off">
+      <div class="grid2"><label class="f">Identifiant<input type="text" id="uName" placeholder="ex. marie" autocapitalize="none" spellcheck="false" required></label>
+      <label class="f">Rôle<select id="uRole">${Object.entries(ROLES).map(([k, l]) => `<option value="${k}" ${k === 'reader' ? 'selected' : ''}>${l}</option>`).join('')}</select></label></div>
+      <label class="f">Mot de passe provisoire (8 caractères minimum)<div class="row" style="margin:0;flex-wrap:nowrap"><input type="text" id="uPwd" minlength="8" required><button type="button" class="btn" id="uGen">Générer</button></div></label>
+      <div class="row"><button class="btn pri" type="submit">Créer le compte</button><span class="meta" id="uMsg"></span></div>
+    </form>
+    <p class="meta">Communiquez l’identifiant et le mot de passe à la personne ; elle pourra changer son mot de passe dans Réglages. Lecteur : consultation et exports · Éditeur : imports, liens, suppressions · Administrateur : tout, y compris les comptes.</p>
+    <h3>Comptes existants (${users.length})</h3>
+    <div class="pv">${users.map(u => `<div><span class="k ${u.disabled ? 'rejected' : u.role === 'admin' ? 'merge' : u.role === 'editor' ? 'update' : 'new'}">${u.disabled ? 'Désactivé' : esc(ROLES[u.role] || u.role)}</span>
+      <span><b>${esc(displayName(u))}</b>${u.uid === me ? ' <span class="meta">(vous)</span>' : ''}</span>
+      <span class="d">Créé le ${esc(fmtDT(u.created_at))}${u.created_by && u.created_by !== 'auto' ? ' par ' + esc(u.created_by) : ''} · dernière connexion : ${u.last_login_at ? esc(fmtDT(u.last_login_at)) : 'jamais'}</span>
+      ${u.uid === me || u.username === 'admin' ? '' : `<span class="d row" style="margin-top:6px">${roleSel(u)}<button class="btn" data-toggle="${esc(u.uid)}">${u.disabled ? 'Réactiver' : 'Désactiver'}</button><button class="btn danger" data-delprof="${esc(u.uid)}">Supprimer</button></span>`}</div>`).join('')}</div>
+    <p class="meta" style="margin-top:12px">Mot de passe oublié par un utilisateur : supprimez son compte ici <b>et</b> dans la console Firebase (Authentication → Utilisateurs), puis recréez-le avec le même identifiant.</p>`, b => {
+    const pwd = () => { const a = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const r = crypto.getRandomValues(new Uint32Array(12)); return [...r].map(x => a[x % a.length]).join(''); };
+    $('#uGen', b).onclick = () => { $('#uPwd', b).value = pwd(); };
+    $('#uf', b).onsubmit = async ev => {
+      ev.preventDefault();
+      const name = $('#uName', b).value.trim().toLowerCase(), pw = $('#uPwd', b).value, role = $('#uRole', b).value, msg = $('#uMsg', b);
+      if (!USERNAME_RE.test(name)) return msg.textContent = 'Identifiant : 2 à 30 caractères (minuscules, chiffres, . _ -).';
+      if (pw.length < 8) return msg.textContent = 'Mot de passe : 8 caractères minimum.';
+      msg.textContent = 'Création…';
+      try { await S.store.createUser(name, pw, role); toast(`Compte <b>${esc(name)}</b> créé (${esc(ROLES[role])}). Mot de passe : <code>${esc(pw)}</code>`, 'ok'); openUsers(); }
+      catch (err) { msg.textContent = 'Échec : ' + authError(err); }
+    };
+    $$('[data-role]', b).forEach(s => s.onchange = async () => { try { await S.store.updateUser(s.dataset.role, { role: s.value }); toast('Rôle modifié.', 'ok'); } catch (err) { toast('Échec : ' + esc(authError(err)), 'err'); openUsers(); } });
+    $$('[data-toggle]', b).forEach(x => x.onclick = async () => { const u = users.find(y => y.uid === x.dataset.toggle); try { await S.store.updateUser(u.uid, { disabled: !u.disabled }); toast(u.disabled ? 'Compte réactivé.' : 'Compte désactivé : il n’a plus accès aux données.', 'ok'); openUsers(); } catch (err) { toast('Échec : ' + esc(authError(err)), 'err'); } });
+    $$('[data-delprof]', b).forEach(x => x.onclick = () => { const u = users.find(y => y.uid === x.dataset.delprof); confirmBox(`Supprimer le compte « ${esc(displayName(u))} » ?`, 'Il perd immédiatement tout accès. Pour libérer l’identifiant, supprimez aussi l’utilisateur dans la console Firebase (Authentication → Utilisateurs).', 'Supprimer', async () => { try { await S.store.deleteProfile(u.uid); toast('Compte supprimé.', 'ok'); } catch (err) { toast('Échec : ' + esc(authError(err)), 'err'); } openUsers(); }); });
+  });
+}
+
 // ---------- Démo : 3 lots fictifs, dates décalées pour finir aujourd'hui ----------
 async function loadDemo() {
+  if (!canWrite()) return;
+  closeModal();
   try {
     const files = ['data/demo-1.json', 'data/demo-2.json', 'templates/exemple-batch.json'];
     const batches = await Promise.all(files.map(f => fetch(f).then(r => r.json())));
@@ -515,41 +592,54 @@ async function loadDemo() {
   } catch (e) { console.error(e); toast('Chargement de la démo impossible : ' + esc(e.message), 'err'); }
 }
 
-// ---------- Connexion Firebase ----------
-function loginScreen(store) {
+// ---------- Connexion Firebase (aucune création de compte ici) ----------
+function loginScreen(store, message = '') {
   return new Promise(resolve => {
-    modal.dataset.locked = '1';
-    openModal('Connexion', `<p>Connectez-vous avec le compte créé dans Firebase (Authentication → Utilisateurs).</p>
-      <form id="lf"><label class="f">E-mail<input type="email" id="lEmail" autocomplete="username" required></label><label class="f">Mot de passe<input type="password" id="lPwd" autocomplete="current-password" required></label>
-      <div class="row"><button class="btn pri" type="submit">Se connecter</button><button class="btn" type="button" id="lLocal">Continuer en mode local</button></div><p class="meta" id="lErr"></p></form>`, b => {
+    modal.dataset.locked = '1'; $('#mClose').hidden = true;
+    openModal('Connexion à LiveWorld', `${message ? `<p class="banner">${message}</p>` : ''}
+      <form id="lf"><label class="f">Identifiant<input type="text" id="lUser" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label class="f">Mot de passe<input type="password" id="lPwd" autocomplete="current-password" required></label>
+      <div class="row"><button class="btn pri" type="submit">Se connecter</button></div><p class="meta" id="lErr"></p>
+      <p class="meta">Pas de compte ? Demandez-en un à l’administrateur.</p></form>`, b => {
+      setTimeout(() => $('#lUser', b).focus(), 50);
       $('#lf', b).onsubmit = async ev => {
         ev.preventDefault(); $('#lErr', b).textContent = 'Connexion…';
-        try { await store.signIn($('#lEmail', b).value.trim(), $('#lPwd', b).value); delete modal.dataset.locked; closeModal(); resolve(store); }
-        catch (err) { $('#lErr', b).textContent = 'Échec : ' + (err.code === 'auth/invalid-credential' ? 'identifiants incorrects.' : err.message); }
+        try { await store.signIn($('#lUser', b).value, $('#lPwd', b).value); delete modal.dataset.locked; $('#mClose').hidden = false; closeModal(); resolve(store); }
+        catch (err) { $('#lErr', b).textContent = 'Échec : ' + authError(err); }
       };
-      $('#lLocal', b).onclick = () => { pref.set('forceLocal', true); delete modal.dataset.locked; closeModal(); resolve(null); };
     });
   });
+}
+function blockedScreen(store, text) {
+  modal.dataset.locked = '1'; $('#mClose').hidden = true;
+  openModal('Accès refusé', `<p>${text}</p><div class="row"><button class="btn" id="bOut">Se déconnecter</button></div>`, b => { $('#bOut', b).onclick = async () => { await store.signOut(); location.reload(); }; });
 }
 
 // ---------- Démarrage ----------
 async function boot() {
   let cfg = null;
   try { cfg = (await import('./firebase-config.js')).firebaseConfig; } catch {}
-  let store = null;
-  if (cfg && cfg.apiKey && !pref.get('forceLocal', false)) {
-    try {
-      const fbs = new FirebaseStore(cfg); await fbs.init(u => { if (!u) location.reload(); });
-      store = fbs.user ? fbs : await loginScreen(fbs);
-    } catch (e) { console.error(e); toast('Firebase indisponible, passage en mode local : ' + esc(e.message), 'err'); }
-  }
-  S.store = store || new LocalStore();
-  try { S.db = await S.store.load(); }
-  catch (e) { console.error(e); toast('Lecture des données impossible : ' + esc(e.message), 'err'); }
   map = new WorldMap($('#map'), $('#mapwrap'), $('#tip'), id => select(id));
   fetch('data/countries-110m.json').then(r => r.json()).then(t => map.setWorld(t)).catch(() => toast('Fond de carte introuvable.', 'err'));
-  renderAll(); renderEx();
-  setInterval(renderEx, 30000);
+  renderEx(); setInterval(renderEx, 30000);
+  if (cfg && cfg.apiKey) {
+    // Mode comptes : pas d'accès sans connexion
+    const fbs = new FirebaseStore(cfg);
+    try { await fbs.init(u => { if (!u) location.reload(); }); }
+    catch (e) { console.error(e); $('#pane').innerHTML = `<p class="empty">Firebase injoignable : ${esc(e.message)}</p>`; return; }
+    if (!fbs.user) await loginScreen(fbs);
+    let profile = null;
+    try { profile = await fbs.loadProfile(); } catch (e) { console.error(e); }
+    if (!profile) return blockedScreen(fbs, `Le compte <b>${esc(fbs.usernameOf(fbs.user.email))}</b> n’est pas autorisé sur ce site. Demandez à l’administrateur de vous créer un accès.`);
+    if (profile.disabled) return blockedScreen(fbs, 'Ce compte a été désactivé par l’administrateur.');
+    S.store = fbs; S.role = profile.role;
+  } else {
+    S.store = new LocalStore(); S.role = 'local';
+  }
+  try { S.db = await S.store.load(); }
+  catch (e) { console.error(e); toast('Lecture des données impossible : ' + esc(authError(e)), 'err'); }
+  renderAll();
+  if (S.store.mode === 'firebase') toast(`Connecté : <b>${esc(displayName(S.store.profile))}</b> · ${esc(ROLES[S.role])}`);
   refreshLive(); setInterval(() => { if (S.D === today()) refreshLive(); }, 5 * 60e3);
   // Changement de jour pendant que la page reste ouverte
   let lastToday = today(); setInterval(() => { if (today() !== lastToday) { if (S.D === lastToday) S.D = today(); lastToday = today(); renderAll(); } }, 60e3);
