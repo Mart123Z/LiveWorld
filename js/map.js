@@ -1,6 +1,6 @@
 // Carte du monde (d3 + world-atlas, aucune tuile externe)
-import { SEV, SEV_COLOR, SEV_RANK, THEME_LABEL } from './config.js?v=202611261020';
-import { esc } from './util.js?v=202611261020';
+import { SEV, SEV_COLOR, SEV_RANK, THEME_LABEL } from './config.js?v=202611261032';
+import { esc } from './util.js?v=202611261032';
 
 export class WorldMap {
   constructor(svgEl, wrapEl, tipEl, onSelect) {

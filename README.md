@@ -101,22 +101,25 @@ Gestion courante (⚙ **Réglages** → **Gérer les comptes**) :
 3. **Connaissances du projet** : ajoutez les fichiers [`templates/liveworld-batch.schema.json`](templates/liveworld-batch.schema.json) et [`templates/exemple-batch.json`](templates/exemple-batch.json).
 4. Vérifiez que la **recherche web** est activée dans vos réglages Claude.
 
-## 4. Veille automatique et bouton « Mettre à jour » (recommandé)
+## 4. Veille automatique (recommandé)
 
-Une **tâche planifiée Claude** (incluse dans l'abonnement, consomme votre quota Claude) fait la veille chaque matin vers 6 h 30, sans intervention :
+Une **tâche planifiée Claude** (incluse dans l'abonnement, elle consomme votre quota Claude) fait la veille chaque matin vers 6 h 30, sans intervention :
 1. elle récupère le dépôt et reconstitue l'état de la base à partir des veilles précédentes ;
 2. elle fait les recherches web et produit un lot `liveworld.batch/v1` ;
 3. elle le valide (`tools/inbox.mjs add`) et le dépose dans `inbox/` sur la branche **`claude/liveworld-inbox`** du dépôt.
 
-Sur le site, le bouton **Mettre à jour** (et l'ouverture du site, pour un éditeur ou l'Admin) importe automatiquement les veilles déposées et pas encore importées. Rien n'est écrasé : même fusion que l'import manuel.
+**Le site lit directement ce dépôt, pour tout le monde**, à l'ouverture, au retour sur l'onglet et toutes les 15 minutes. Il n'y a aucun bouton à utiliser.
+- **Admin et éditeurs** : les nouvelles veilles sont en plus enregistrées dans la base (Firebase), avec la même fusion que l'import manuel : rien n'est écrasé.
+- **Lecteurs** : les veilles sont appliquées à l'affichage seulement.
 
-- **Lancer une veille tout de suite** : https://claude.ai/code/routines → « Veille LiveWorld quotidienne » → **Exécuter maintenant**, attendez la fin (10 à 20 minutes), puis cliquez sur **Mettre à jour**.
-- **Changer l'heure ou la fréquence** : même page, ou demandez-le à Claude.
+L'icône 🔔 (*Journal des veilles*) montre la dernière veille et propose **Vérifier maintenant**.
+
+- **Lancer une veille tout de suite** : https://claude.ai/code/routines → « Veille LiveWorld quotidienne » → **Exécuter maintenant**. Elle apparaît sur le site 10 à 20 minutes plus tard.
+- **Changer l'heure ou la fréquence** : même page.
 - **Modifier la procédure** : fichier [`tools/VEILLE_AUTOMATIQUE.md`](tools/VEILLE_AUTOMATIQUE.md).
 - **Bon à savoir** :
-  - La veille automatique ne voit que ses propres veilles. Les liens ajoutés à la main sur le site, les suppressions et les imports manuels ne lui sont pas connus.
+  - La veille automatique ne voit que ses propres veilles : les liens ajoutés à la main, les suppressions et les imports manuels ne lui sont pas connus.
   - Les fichiers de veille sont publics, comme le reste du dépôt.
-  - Un lecteur ne peut pas déclencher l'import : il faut qu'un éditeur ou l'Admin ouvre le site.
 
 ## 4 bis. La routine manuelle (si besoin)
 

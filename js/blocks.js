@@ -1,6 +1,6 @@
 // Rendu des blocs libres produits par Claude (aucun HTML brut n'est accepté)
-import { esc, md, extLink, safeUrl, fmtDay } from './util.js?v=202611261020';
-import { CONF } from './config.js?v=202611261020';
+import { esc, md, extLink, safeUrl, fmtDay } from './util.js?v=202611261032';
+import { CONF } from './config.js?v=202611261032';
 
 const PROB = { low: 'Probabilité faible', medium: 'Probabilité moyenne', high: 'Probabilité élevée' };
 const TREND = { up: '▲', down: '▼', flat: '▬' };
@@ -66,7 +66,7 @@ let mermaidReady = null;
 function loadMermaid() {
   if (mermaidReady) return mermaidReady;
   mermaidReady = new Promise((res, rej) => {
-    const s = document.createElement('script'); s.src = 'vendor/mermaid.min.js?v=202611261020';
+    const s = document.createElement('script'); s.src = 'vendor/mermaid.min.js?v=202611261032';
     s.onload = () => { window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', flowchart: { useMaxWidth: false }, timeline: { useMaxWidth: false }, mindmap: { useMaxWidth: false }, fontFamily: 'Inter, system-ui, sans-serif', themeVariables: { background: '#12171d', primaryColor: '#1a2027', primaryTextColor: '#e6ebf0', lineColor: '#8a96a3', primaryBorderColor: '#2ec5d3' } }); res(window.mermaid); };
     s.onerror = rej; document.head.appendChild(s);
   });
