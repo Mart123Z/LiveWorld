@@ -1,4 +1,13 @@
 {
  "schema": "liveworld.inbox/v1",
- "batches": []
+ "batches": [
+  {
+   "file": "2026-11-26T09-30-claude.json",
+   "batch_id": "2026-11-26T09-30-claude",
+   "generated_at": "2026-11-26T10:30:00+01:00",
+   "request": "Veille automatique du 2026-11-26",
+   "events": 13
+  }
+ ],
+ "updated_at": "2026-11-26T09:29:19.705Z"
 }

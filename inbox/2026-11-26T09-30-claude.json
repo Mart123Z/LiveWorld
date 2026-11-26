@@ -1,0 +1,1378 @@
+{
+ "schema": "liveworld.batch/v1",
+ "batch_id": "2026-11-26T09-30-claude",
+ "generated_at": "2026-11-26T10:30:00+01:00",
+ "author": "claude",
+ "request": "Veille automatique du 2026-11-26",
+ "coverage": {
+  "from": "2026-11-19",
+  "to": "2026-11-26"
+ },
+ "notes": "Première session (base vide) : couverture du 19 au 26 novembre 2026. La lecture directe des articles était bloquée par le réseau de la session (wtop, devdiscourse, stamfordadvocate…) : les faits proviennent des extraits de recherche, recoupés entre plusieurs médias. Non vérifié ou à creuser : (1) clôture du Brent le 25/11 contradictoire selon le contrat (90,91 $ février vs 94,61 $ janvier) — cotation omise ; (2) or, bitcoin, EUR/USD et taux à 10 ans américain : seules des valeurs intraday ou divergentes trouvées — omises ; (3) l'attaque houthie sur la raffinerie de Ras Tanura n'est pas confirmée par Riyad ni Aramco ; (4) l'affirmation des Gardiens de la révolution sur trois pétroliers touchés par des mines dans Ormuz est non confirmée (JMIC) ; (5) la COP31 n'est documentée que par des sources secondaires ; (6) le contexte de fond (guerre Iran–États-Unis de 2026, blocus naval, hausse de taux de la Fed déjà intervenue) n'a pas été créé comme événement distinct faute de vérification approfondie : à reconstituer lors d'une prochaine session. À suivre : réunion de la Fed des 8-9 décembre, prochain cycle de négociations Ukraine, médiation qatarie sur Ormuz, peines encourues par Huawei.",
+ "events": [
+  {
+   "id": "evt-20261119-wall-street-correction-ia",
+   "title": "Wall Street en correction : déroute des valeurs de l'IA",
+   "summary": "Les marchés américains ont subi leur pire semaine depuis le choc tarifaire d'avril 2025 : le S&P 500 a perdu 8,6 % sur la semaine close le 20 novembre et est passé à plus de 10 % sous son record du 6 octobre. Nvidia (départ de son PDG, enquête possible de la SEC) et les doutes sur la soutenabilité des dépenses dans l'IA ont mené la baisse. Un rebond de 4,7 % a suivi le 23 novembre avec le retour de Jensen Huang, mais la séance du 25 novembre est restée très volatile (jusqu'à -3,2 % en séance) sur fond de nouvelles menaces tarifaires et d'inflation tenace.",
+   "date": "2026-11-19",
+   "status": "active",
+   "severity": "critical",
+   "themes": [
+    "marches",
+    "tech-semis",
+    "macroeconomie"
+   ],
+   "tags": [
+    "etats-unis",
+    "s&p 500",
+    "nasdaq",
+    "nvidia",
+    "intelligence artificielle",
+    "anthropic",
+    "wall street"
+   ],
+   "location": {
+    "name": "New York",
+    "country": "US",
+    "lat": 40.7069,
+    "lng": -74.0113,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "CNBC",
+     "title": "S&P 500 correction: Five forces behind the market sell-off",
+     "url": "https://www.cnbc.com/2026/11/20/sp-500-correction-market-sell-off.html",
+     "published_at": "2026-11-20"
+    },
+    {
+     "outlet": "Axios",
+     "title": "Nvidia shares plunge as Anthropic can't stop the AI selloff",
+     "url": "https://www.axios.com/2026/11/20/anthropic-ipo-nvidia-ai-tech-selloff",
+     "published_at": "2026-11-20"
+    },
+    {
+     "outlet": "Yahoo Finance",
+     "title": "Markets News, Nov. 20, 2026: Major Stock Indexes Sink, Wipe Out 2026 Gains as AI Trade Melts Down",
+     "url": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-futures-plunge-131303598.html",
+     "published_at": "2026-11-20"
+    },
+    {
+     "outlet": "AP / WTOP",
+     "title": "How major US stock indexes fared Wednesday 11/25/2026",
+     "url": "https://wtop.com/national/2026/11/how-major-us-stock-indexes-fared-wednesday-11-25-2026",
+     "published_at": "2026-11-25"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-19",
+     "text": "Le S&P 500 et le Dow terminent en zone de correction ; le Nasdaq efface ses gains de 2026.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-20",
+     "text": "Le S&P 500 chute de 3,7 % à 6 910,39 points et le Nasdaq de 5,3 % ; Nvidia perd environ 14 %. Bilan hebdomadaire : -8,6 % pour le S&P 500.",
+     "severity": "critical"
+    },
+    {
+     "at": "2026-11-23",
+     "text": "Fort rebond : S&P 500 +4,7 % à 7 237,17 points, Nasdaq +6,5 %, porté par la réintégration de Jensen Huang chez Nvidia.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-25",
+     "text": "Séance très agitée avant Thanksgiving : le S&P 500 cède jusqu'à 3,2 % puis clôture à 7 182,78 points (-0,25 %), le Dow repasse au-dessus de 50 000 points, le Nasdaq recule de 0,6 %.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Tech / Semi-conducteurs",
+     "direction": "volatile",
+     "horizon": "weeks",
+     "confidence": "high",
+     "rationale": "Les valeurs de l'IA et des puces (Nvidia, AMD, Broadcom, Micron) concentrent les ventes puis les rachats."
+    },
+    {
+     "sector": "Actions",
+     "direction": "bearish",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Baisse des indices actions américains et européens sous l'effet des doutes sur l'IA, des droits de douane et d'une Fed restrictive."
+    },
+    {
+     "sector": "Crypto-actifs",
+     "direction": "bearish",
+     "horizon": "days",
+     "confidence": "medium",
+     "rationale": "Le bitcoin recule vers 57 000-58 000 $ dans le mouvement de réduction du risque."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "chiffres",
+     "type": "key_figures",
+     "items": [
+      {
+       "label": "S&P 500 (25/11)",
+       "value": "7 182,78",
+       "unit": "pts",
+       "delta": "-0,25 %",
+       "trend": "down",
+       "source_url": "https://wtop.com/national/2026/11/how-major-us-stock-indexes-fared-wednesday-11-25-2026"
+      },
+      {
+       "label": "Semaine au 20/11",
+       "value": "-8,6",
+       "unit": "%",
+       "trend": "down",
+       "source_url": "https://finance.yahoo.com/markets/stocks/articles/stock-market-today-futures-plunge-131303598.html"
+      },
+      {
+       "label": "Record du S&P 500 (6/10)",
+       "value": "7 818,93",
+       "unit": "pts",
+       "trend": "flat",
+       "source_url": "https://www.morningstar.com/news/dow-jones/202611188038/sp-500-falls-023-to-732363-data-talk"
+      }
+     ]
+    },
+    {
+     "id": "courbe-spx",
+     "type": "chart",
+     "chart": "line",
+     "title": "S&P 500 à la clôture",
+     "unit": "points",
+     "labels": [
+      "18/11",
+      "20/11",
+      "23/11",
+      "25/11"
+     ],
+     "series": [
+      {
+       "name": "S&P 500",
+       "values": [
+        7323.63,
+        6910.39,
+        7237.17,
+        7182.78
+       ],
+       "source_url": "https://wtop.com/national/2026/11/how-major-us-stock-indexes-fared-wednesday-11-25-2026"
+      }
+     ]
+    },
+    {
+     "type": "diagram",
+     "title": "Facteurs de la baisse",
+     "mermaid": "flowchart LR\n  A[\"Éviction de J. Huang\"] --> D[\"Chute de Nvidia\"]\n  B[\"Doutes sur les dépenses IA\"] --> D\n  D --> E[\"Correction du S&P 500\"]\n  C[\"Droits de douane section 301\"] --> E\n  F[\"Inflation PCE 3,8 %\"] --> G[\"Hausse de taux attendue\"] --> E"
+    },
+    {
+     "type": "text",
+     "md": "**Pourquoi c'est important.** L'IA portait l'essentiel de la hausse des marchés depuis deux ans. La concomitance d'une crise de gouvernance chez Nvidia, de la plus grosse introduction en Bourse de l'histoire (Anthropic) et d'une Fed qui envisage de **relever** ses taux rend le marché très sensible à chaque nouvelle."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261112-nvidia-huang-depart-retour",
+   "title": "Nvidia : Jensen Huang démissionne puis est réintégré comme PDG",
+   "summary": "Jensen Huang a quitté la présidence de Nvidia le 12 novembre après des révélations sur sa vie privée, dont une relation avec une personne soupçonnée d'espionnage pour la Chine selon la presse. Le conseil d'administration, qui avait d'abord exclu son retour, l'a réintégré le 23 novembre après des pressions publiques de Donald Trump ; l'action a bondi de plus de 30 %. L'enquête interne, des investigations en Californie et au Congrès (activités en Chine, contrôle des exportations, détournement de puces) se poursuivent.",
+   "date": "2026-11-12",
+   "status": "active",
+   "severity": "high",
+   "themes": [
+    "tech-semis",
+    "marches",
+    "logistique-commerce"
+   ],
+   "tags": [
+    "nvidia",
+    "jensen huang",
+    "etats-unis",
+    "chine",
+    "trump",
+    "controle des exportations",
+    "sec"
+   ],
+   "location": {
+    "name": "Santa Clara (Californie)",
+    "country": "US",
+    "lat": 37.3708,
+    "lng": -121.9637,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "SEC (8-K Nvidia)",
+     "title": "NVIDIA Corp – Form 8-K (23 novembre 2026)",
+     "url": "https://www.sec.gov/Archives/edgar/data/0001045810/000104581026000090/nov23pressrelease.htm",
+     "published_at": "2026-11-23"
+    },
+    {
+     "outlet": "Al Jazeera",
+     "title": "Nvidia board reinstates Jensen Huang as CEO",
+     "url": "https://www.aljazeera.com/economy/2026/11/23/nvidia-board-reinstates-jensen-huang-as-ceo",
+     "published_at": "2026-11-23"
+    },
+    {
+     "outlet": "CNBC",
+     "title": "Nvidia brought Jensen Huang back. But the investigations aren't over",
+     "url": "https://www.cnbc.com/2026/11/24/nvidia-jensen-huang-ceo-return.html",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "NBC News",
+     "title": "Jensen Huang reinstated as Nvidia CEO after Trump pushes board",
+     "url": "https://www.nbcnews.com/tech/tech-news/nvidia-reinstates-jensen-huang-rcna610864",
+     "published_at": "2026-11-23"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-12",
+     "text": "Démission de Jensen Huang de ses fonctions de PDG et d'administrateur ; Colette Kress assure l'intérim.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-20",
+     "text": "Nvidia perd environ 14 % en une séance sur fond d'informations sur une possible enquête comptable de la SEC (non confirmée par l'autorité).",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-23",
+     "text": "Le conseil réintègre Jensen Huang avec effet immédiat et crée un poste de directeur de la conformité ; l'action gagne plus de 30 %.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Tech / Semi-conducteurs",
+     "direction": "volatile",
+     "horizon": "weeks",
+     "confidence": "high",
+     "rationale": "Nvidia pèse lourd dans les indices : sa gouvernance et les enquêtes en cours dictent les mouvements du secteur."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "chronologie",
+     "type": "timeline",
+     "title": "Chronologie",
+     "items": [
+      {
+       "date": "2026-11-12",
+       "label": "Démission",
+       "text": "Départ immédiat de Jensen Huang, intérim de Colette Kress."
+      },
+      {
+       "date": "2026-11-20",
+       "label": "Krach du titre",
+       "text": "Environ -14 % en une séance."
+      },
+      {
+       "date": "2026-11-23",
+       "label": "Réintégration",
+       "text": "Retour de Huang après des pressions de Donald Trump ; action +30 %."
+      }
+     ]
+    },
+    {
+     "type": "callout",
+     "tone": "warning",
+     "title": "Enquêtes toujours ouvertes",
+     "md": "L'enquête indépendante interne, l'examen par la Californie et les questions du Congrès sur les ventes en Chine et le détournement possible de puces restent en cours."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261119-anthropic-introduction-bourse",
+   "title": "Anthropic réalise la plus grosse introduction en Bourse de l'histoire",
+   "summary": "Anthropic a fixé le prix de son introduction au Nasdaq à 83 $ par action le 18 novembre, au-dessus de la fourchette de 70 à 78 $, levant 81,34 milliards de dollars, un record. Le titre (ANT) a clôturé sa première séance du 19 novembre à 97,17 $ (+17 %), avant de reculer d'environ 9 % le lendemain dans la déroute des valeurs de l'IA.",
+   "date": "2026-11-19",
+   "status": "monitoring",
+   "severity": "moderate",
+   "themes": [
+    "marches",
+    "tech-semis"
+   ],
+   "tags": [
+    "anthropic",
+    "intelligence artificielle",
+    "nasdaq",
+    "introduction en bourse",
+    "etats-unis"
+   ],
+   "location": {
+    "name": "New York",
+    "country": "US",
+    "lat": 40.7569,
+    "lng": -73.9867,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "BNN Bloomberg",
+     "title": "Anthropic closes first day of trading at US$97.17, jumping more than 17% above its initial public offering price",
+     "url": "https://www.bnnbloomberg.ca/business/company-news/2026/11/19/anthropic-set-to-begin-trading-as-a-us15-trillion-company-in-the-biggest-ipo-on-record/",
+     "published_at": "2026-11-19"
+    },
+    {
+     "outlet": "Fortune",
+     "title": "Anthropic stock pops 30% to $2 trillion market cap, in mega IPO",
+     "url": "https://fortune.com/2026/11/19/anthropic-ipo-first-day-trading-nasdaq-record-valuation/",
+     "published_at": "2026-11-19"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-19",
+     "text": "Première cotation : ouverture à 111,50 $, clôture à 97,17 $ ; plus de 846 millions d'actions échangées.",
+     "severity": "moderate"
+    },
+    {
+     "at": "2026-11-20",
+     "text": "Le titre recule d'environ 9 % en début de séance, emporté par la baisse générale du secteur.",
+     "severity": "moderate"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Actions",
+     "direction": "volatile",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Une capitalisation de l'ordre de 1,3 à 1,8 billion de dollars selon les sources crée un nouveau poids lourd sensible au sentiment sur l'IA."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "chiffres",
+     "type": "key_figures",
+     "items": [
+      {
+       "label": "Prix d'introduction",
+       "value": "83",
+       "unit": "$",
+       "source_url": "https://www.bnnbloomberg.ca/business/company-news/2026/11/19/anthropic-set-to-begin-trading-as-a-us15-trillion-company-in-the-biggest-ipo-on-record/"
+      },
+      {
+       "label": "Montant levé",
+       "value": "81,34",
+       "unit": "Md$",
+       "source_url": "https://www.bnnbloomberg.ca/business/company-news/2026/11/19/anthropic-set-to-begin-trading-as-a-us15-trillion-company-in-the-biggest-ipo-on-record/"
+      },
+      {
+       "label": "Clôture du 19/11",
+       "value": "97,17",
+       "unit": "$",
+       "delta": "+17,1 %",
+       "trend": "up",
+       "source_url": "https://www.bnnbloomberg.ca/business/company-news/2026/11/19/anthropic-set-to-begin-trading-as-a-us15-trillion-company-in-the-biggest-ipo-on-record/"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "evt-20261124-usa-droits-douane-section-301",
+   "title": "Washington prépare de nouveaux droits de douane contre 14 partenaires",
+   "summary": "L'administration Trump prépare, via une enquête « section 301 » du représentant au Commerce sur les subventions industrielles, de nouveaux droits de douane visant 14 partenaires dont la Chine, l'UE, le Japon, la Corée du Sud, Taïwan, l'Inde et le Vietnam. Les taux évoqués vont de 15 % (UE, Corée du Sud, Suisse, Taïwan) à 35 % (Vietnam), avec 20 % supplémentaires pour la Chine ; ils ne sont pas définitifs. Il s'agit de recréer les droits de 2025 invalidés par la Cour suprême en février 2026. L'annonce a accentué la baisse des valeurs technologiques les 24 et 25 novembre.",
+   "date": "2026-11-24",
+   "status": "active",
+   "severity": "high",
+   "themes": [
+    "logistique-commerce",
+    "diplomatie",
+    "marches"
+   ],
+   "tags": [
+    "etats-unis",
+    "droits de douane",
+    "section 301",
+    "chine",
+    "union europeenne",
+    "vietnam",
+    "trump"
+   ],
+   "location": {
+    "name": "Washington",
+    "country": "US",
+    "lat": 38.8977,
+    "lng": -77.0365,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "Al Jazeera",
+     "title": "World reacts to Trump's new tariffs as US stocks tumble",
+     "url": "https://www.aljazeera.com/economy/2026/11/25/world-reacts-to-trumps-new-tariffs-as-us-stocks-tumble",
+     "published_at": "2026-11-25"
+    },
+    {
+     "outlet": "Investing.com",
+     "title": "White House prepares sweeping new tariffs on China, EU, and dozens of nations",
+     "url": "https://www.investing.com/news/stock-market-news/white-house-prepares-sweeping-new-tariffs-on-china-eu-and-dozens-of-nations-5048285",
+     "published_at": "2026-11-24"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-24",
+     "text": "Publication des projets de droits de douane ; le Nasdaq recule de plus de 2 % à l'ouverture.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-25",
+     "text": "Réactions internationales ; les taux restent non finalisés selon les responsables américains.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Actions",
+     "direction": "bearish",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Pression sur les actions exportatrices asiatiques et européennes et sur les valeurs technologiques américaines dépendantes des chaînes d'approvisionnement."
+    },
+    {
+     "sector": "Devises",
+     "direction": "volatile",
+     "horizon": "weeks",
+     "confidence": "low",
+     "rationale": "Les monnaies des pays visés (yuan, won, dong) peuvent réagir à la confirmation des taux."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "taux",
+     "type": "table",
+     "title": "Taux évoqués (non définitifs)",
+     "columns": [
+      "Partenaire",
+      "Taux envisagé"
+     ],
+     "rows": [
+      [
+       "Union européenne",
+       "15 %"
+      ],
+      [
+       "Corée du Sud",
+       "15 %"
+      ],
+      [
+       "Suisse",
+       "15 %"
+      ],
+      [
+       "Taïwan",
+       "15 %"
+      ],
+      [
+       "Vietnam",
+       "35 %"
+      ],
+      [
+       "Chine",
+       "+20 % en plus des droits existants"
+      ]
+     ],
+     "note": "Selon des informations de presse ; liste complète des 14 pays non publiée officiellement.",
+     "source_url": "https://www.aljazeera.com/economy/2026/11/25/world-reacts-to-trumps-new-tariffs-as-us-stocks-tumble"
+    },
+    {
+     "type": "callout",
+     "tone": "info",
+     "title": "Base juridique",
+     "md": "La Cour suprême ayant invalidé en février 2026 les droits fondés sur les pouvoirs d'urgence, l'administration passe par la **section 301** (pratiques commerciales déloyales), procédure plus longue qui prévoit une enquête préalable."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261125-usa-inflation-pce-octobre",
+   "title": "États-Unis : inflation PCE à 3,8 %, la Fed s'oriente vers une hausse de taux",
+   "summary": "L'indice des prix PCE a progressé de 3,8 % sur un an en octobre et l'indice sous-jacent de 3,3 %, au plus haut depuis novembre 2023, selon le BEA. La croissance du troisième trimestre a été révisée à 4,3 % en rythme annualisé. Les marchés à terme attribuent environ 95 % de probabilité à une hausse de 25 points de base lors de la réunion de la Fed des 8 et 9 décembre (fourchette actuelle 3,75 %-4,00 %).",
+   "date": "2026-11-25",
+   "status": "active",
+   "severity": "high",
+   "themes": [
+    "macroeconomie",
+    "banques-centrales",
+    "marches"
+   ],
+   "tags": [
+    "etats-unis",
+    "fed",
+    "inflation",
+    "pce",
+    "pib",
+    "taux"
+   ],
+   "location": {
+    "name": "Washington",
+    "country": "US",
+    "lat": 38.8921,
+    "lng": -77.0241,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "Bureau of Economic Analysis",
+     "title": "Personal Income and Outlays, October 2026",
+     "url": "https://www.bea.gov/sites/default/files/2026-11/pi1026.pdf",
+     "published_at": "2026-11-25T08:30:00-05:00"
+    },
+    {
+     "outlet": "Benzinga",
+     "title": "PCE Inflation Hits 3.8% as Expected, Q3 GDP Growth Revised Up to 4.3%",
+     "url": "https://www.benzinga.com/markets/economic-data/26/11/63619838/pce-inflation-october-gdp-second-estimate",
+     "published_at": "2026-11-25"
+    },
+    {
+     "outlet": "CNBC",
+     "title": "10-year Treasury yield slides despite sticky inflation data as investors buy bonds for protection",
+     "url": "https://www.cnbc.com/2026/11/25/treasury-yields-bonds-inflation.html",
+     "published_at": "2026-11-25"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-25T08:30:00-05:00",
+     "text": "PCE +3,8 % sur un an (+0,3 % sur le mois), PCE sous-jacent +3,3 % ; PIB du 3e trimestre révisé à +4,3 %. Le taux à 10 ans recule toutefois vers 4,87 % sur des achats de précaution.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Obligations",
+     "direction": "volatile",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Tiraillement entre anticipation de hausse de taux (taux courts en hausse) et achats refuges (taux longs en baisse)."
+    },
+    {
+     "sector": "Devises",
+     "direction": "bullish",
+     "horizon": "weeks",
+     "confidence": "low",
+     "rationale": "Une Fed qui resserre soutient le dollar face aux devises dont la banque centrale est moins restrictive."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "chiffres",
+     "type": "key_figures",
+     "items": [
+      {
+       "label": "PCE (sur un an)",
+       "value": "3,8",
+       "unit": "%",
+       "trend": "up",
+       "source_url": "https://www.bea.gov/sites/default/files/2026-11/pi1026.pdf"
+      },
+      {
+       "label": "PCE sous-jacent",
+       "value": "3,3",
+       "unit": "%",
+       "delta": "+0,2 pt",
+       "trend": "up",
+       "source_url": "https://www.benzinga.com/markets/economic-data/26/11/63619838/pce-inflation-october-gdp-second-estimate"
+      },
+      {
+       "label": "PIB T3 (annualisé)",
+       "value": "4,3",
+       "unit": "%",
+       "delta": "révisé de 3,4 %",
+       "trend": "up",
+       "source_url": "https://www.benzinga.com/markets/economic-data/26/11/63619838/pce-inflation-october-gdp-second-estimate"
+      },
+      {
+       "label": "10 ans américain",
+       "value": "4,87",
+       "unit": "%",
+       "trend": "down",
+       "source_url": "https://www.cnbc.com/2026/11/25/treasury-yields-bonds-inflation.html"
+      }
+     ]
+    },
+    {
+     "id": "scenarios",
+     "type": "scenarios",
+     "items": [
+      {
+       "name": "Hausse de 25 pb le 9 décembre",
+       "probability": "high",
+       "description": "Scénario central valorisé par les marchés à terme.",
+       "signals": [
+        "Discours des gouverneurs avant la période de silence",
+        "Rapport sur l'emploi de novembre"
+       ]
+      },
+      {
+       "name": "Hausse de 50 pb",
+       "probability": "low",
+       "description": "Évoquée par certains responsables, abandonnée par les marchés après les chiffres du PCE.",
+       "signals": [
+        "Accélération des salaires",
+        "Hausse des anticipations d'inflation"
+       ]
+      },
+      {
+       "name": "Statu quo",
+       "probability": "low",
+       "description": "Possible si la correction boursière dégénère en stress financier.",
+       "signals": [
+        "Écartement des primes de crédit",
+        "Nouvelle chute des actions"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "evt-20261121-ukraine-frappe-navire-golfe-finlande",
+   "title": "L'Ukraine frappe un cargo militaire russe dans le golfe de Finlande",
+   "summary": "Un drone ukrainien a frappé le 21 novembre le cargo russe Sparta II, appartenant à Oboronlogistika (logistique du ministère russe de la Défense), dans le golfe de Finlande. Le navire en feu a dérivé dans les eaux finlandaises selon Helsinki ; des navires finlandais, estoniens et russes ont participé au sauvetage avant son remorquage vers Saint-Pétersbourg. Volodymyr Zelensky a revendiqué l'attaque le 24 novembre ; la Norvège a appelé Kyiv à la prudence et le Kremlin dénonce une escalade.",
+   "date": "2026-11-21",
+   "status": "active",
+   "severity": "high",
+   "themes": [
+    "conflits-securite",
+    "diplomatie",
+    "logistique-commerce"
+   ],
+   "tags": [
+    "ukraine",
+    "russie",
+    "finlande",
+    "mer baltique",
+    "drones",
+    "norvege",
+    "otan"
+   ],
+   "location": {
+    "name": "Golfe de Finlande",
+    "country": "FI",
+    "lat": 60,
+    "lng": 26.5,
+    "precision": "sea"
+   },
+   "sources": [
+    {
+     "outlet": "The Moscow Times",
+     "title": "Zelensky Confirms Ukraine Was Behind Drone Attack on Russian Cargo Ship in Gulf of Finland",
+     "url": "https://www.themoscowtimes.com/2026/11/24/zelensky-confirms-ukraine-was-behind-drone-attack-on-russian-cargo-ship-in-gulf-of-finland-a94364",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "Bloomberg",
+     "title": "Zelenskyy Confirms Ukraine Hit Russian Ship in Gulf of Finland",
+     "url": "https://www.bloomberg.com/news/articles/2026-11-24/zelenskyy-confirms-ukraine-hit-russian-ship-in-gulf-of-finland",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "The Irish Times",
+     "title": "Zelenskiy confirms Ukrainian drone strike on Russian ship in Gulf of Finland",
+     "url": "https://www.irishtimes.com/world/europe/2026/11/24/zelenskiy-confirms-ukrainian-drone-strike-on-russian-ship-in-gulf-of-finland/",
+     "published_at": "2026-11-24"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-21",
+     "text": "Frappe de drone contre le Sparta II ; incendie et dérive vers les eaux finlandaises.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-24",
+     "text": "Zelensky revendique l'attaque et qualifie de cibles légitimes les navires russes transportant des armes ou des cargaisons sanctionnées ; Oslo appelle à la prudence.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Assurance",
+     "direction": "bullish",
+     "horizon": "weeks",
+     "confidence": "low",
+     "rationale": "Hausse possible des primes de risque de guerre pour les navires liés à la Russie en Baltique."
+    },
+    {
+     "sector": "Fret maritime",
+     "direction": "volatile",
+     "horizon": "weeks",
+     "confidence": "low",
+     "rationale": "Extension de la guerre navale à la Baltique, axe majeur des exportations russes."
+    }
+   ],
+   "blocks": [
+    {
+     "type": "callout",
+     "tone": "warning",
+     "title": "Risque d'élargissement",
+     "md": "La frappe s'est produite à proximité immédiate des eaux de deux membres de l'OTAN (Finlande, Estonie). Elle marque l'extension des opérations ukrainiennes contre la logistique russe à la mer Baltique."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261110-ukraine-negociations-abou-dhabi",
+   "title": "Ukraine : reprise des négociations de paix trilatérales à Abou Dhabi",
+   "summary": "Délégations américaine, russe et ukrainienne se sont réunies les 10 et 11 novembre à Abou Dhabi, première négociation directe depuis février, sous la médiation de Steve Witkoff et Jared Kushner. Moscou n'a pas assoupli ses exigences (territoires, renoncement à l'OTAN) mais a soutenu l'idée américaine de lier la paix à une architecture de sécurité européenne. Le 17 novembre, Kyiv a rencontré responsables américains et européens et prévu une réunion à Berlin avec la « coalition des volontaires » ; aucune date de nouveau cycle trilatéral n'est fixée.",
+   "date": "2026-11-10",
+   "status": "monitoring",
+   "severity": "high",
+   "themes": [
+    "diplomatie",
+    "conflits-securite"
+   ],
+   "tags": [
+    "ukraine",
+    "russie",
+    "etats-unis",
+    "emirats arabes unis",
+    "witkoff",
+    "negociations de paix",
+    "coalition des volontaires"
+   ],
+   "location": {
+    "name": "Abou Dhabi",
+    "country": "AE",
+    "lat": 24.4539,
+    "lng": 54.3773,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "The Washington Post",
+     "title": "Russia and Ukraine begin U.S.-backed peace talks in Abu Dhabi",
+     "url": "https://www.washingtonpost.com/world/2026/11/10/russia-ukraine-begin-us-backed-peace-talks-abu-dhabi/",
+     "published_at": "2026-11-10"
+    },
+    {
+     "outlet": "Euronews",
+     "title": "Ukraine-Russia peace talks enter second day with territory and security guarantees in focus",
+     "url": "https://www.euronews.com/2026/11/11/ukraine-russia-peace-talks-enter-second-day-with-territory-and-security-guarantees-in-focu",
+     "published_at": "2026-11-11"
+    },
+    {
+     "outlet": "Al Jazeera",
+     "title": "Ukraine holds peace talks with US, Europe as conflict escalates",
+     "url": "https://www.aljazeera.com/news/2026/11/17/ukraine-holds-peace-talks-with-us-europe-as-conflict-escalates",
+     "published_at": "2026-11-17"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-11",
+     "text": "Fin du cycle d'Abou Dhabi sans percée ; Moscou maintient ses exigences territoriales.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-17",
+     "text": "Réunion Ukraine–États-Unis–Européens ; projet de rencontre à Berlin avec la coalition des volontaires, que Moscou refuse d'associer aux pourparlers.",
+     "severity": "moderate"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Énergie",
+     "direction": "volatile",
+     "horizon": "months",
+     "confidence": "low",
+     "rationale": "Chaque signal de progrès ou d'échec des négociations fait varier les anticipations sur l'offre russe de pétrole et de gaz."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "scenarios",
+     "type": "scenarios",
+     "items": [
+      {
+       "name": "Nouveau cycle trilatéral d'ici fin d'année",
+       "probability": "medium",
+       "description": "Washington pousse à une reprise rapide.",
+       "signals": [
+        "Annonce d'une date par Witkoff",
+        "Réunion de Berlin"
+       ]
+      },
+      {
+       "name": "Gel des pourparlers et escalade",
+       "probability": "medium",
+       "description": "Frappes accrues sur l'énergie et extension maritime du conflit.",
+       "signals": [
+        "Nouvelles frappes en Baltique",
+        "Frappes massives de missiles"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "evt-20261124-iran-ormuz-durcissement",
+   "title": "Ormuz : l'Iran durcit la fermeture du détroit, le Qatar tente de relancer le dialogue",
+   "summary": "Le chef de l'armée iranienne a ordonné le 24 novembre de fermer davantage, « jour après jour », le détroit d'Ormuz tant que Washington n'aura pas satisfait les conditions de Téhéran (levée du blocus naval américain et des sanctions, dégel d'avoirs, fin formelle de la guerre). Les Gardiens de la révolution affirment que trois pétroliers escortés par les États-Unis ont heurté des mines, ce que le JMIC n'a pas confirmé. Le Qatar dit poursuivre ses contacts pour rapprocher Américains et Iraniens ; Téhéran nie toute négociation directe en cours.",
+   "date": "2026-11-24",
+   "status": "active",
+   "severity": "critical",
+   "themes": [
+    "conflits-securite",
+    "energie",
+    "diplomatie"
+   ],
+   "tags": [
+    "iran",
+    "etats-unis",
+    "detroit d'ormuz",
+    "qatar",
+    "petrole",
+    "blocus",
+    "gardiens de la revolution"
+   ],
+   "location": {
+    "name": "Détroit d'Ormuz",
+    "country": "IR",
+    "lat": 26.566,
+    "lng": 56.25,
+    "precision": "sea"
+   },
+   "sources": [
+    {
+     "outlet": "Euronews",
+     "title": "Iran orders Hormuz closed 'further day by day' as Qatar seeks to revive peace talks",
+     "url": "https://www.euronews.com/2026/11/24/iran-orders-hormuz-closed-further-day-by-day-as-qatar-seeks-to-revive-peace-talks",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "Al Jazeera",
+     "title": "Iran denies talks with US, says Hormuz will stay shut until demands are met",
+     "url": "https://www.aljazeera.com/news/2026/11/11/iran-denies-talks-with-us-says-hormuz-will-stay-shut-until-demands-are-met",
+     "published_at": "2026-11-11"
+    },
+    {
+     "outlet": "Rigzone (Bloomberg)",
+     "title": "Oil Up as Hormuz Attacks Counter Recovery in Supply",
+     "url": "https://www.rigzone.com/news/wire/oil_up_as_hormuz_attacks_counter_recovery_in_supply-25-nov-2026-185171-article/",
+     "published_at": "2026-11-25"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-11",
+     "text": "Téhéran dément toute négociation avec Washington et pose sept conditions à la réouverture du détroit.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-24",
+     "text": "Ordre de durcir la fermeture ; revendication (non confirmée) de pétroliers touchés par des mines ; médiation qatarie.",
+     "severity": "critical"
+    },
+    {
+     "at": "2026-11-25",
+     "text": "Le Brent rebondit (environ +3 % selon Bloomberg) malgré les craintes d'excédent d'offre, après les attaques dans le Golfe.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Pétrole",
+     "direction": "bullish",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Le prix du Brent intègre une prime de risque liée aux perturbations du transit par Ormuz, limitée par l'abondance de l'offre."
+    },
+    {
+     "sector": "Fret maritime",
+     "direction": "bullish",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Taux de fret et primes d'assurance des pétroliers en hausse dans le Golfe."
+    }
+   ],
+   "blocks": [
+    {
+     "type": "diagram",
+     "title": "Transmission du choc",
+     "mermaid": "flowchart LR\n  A[\"Fermeture d'Ormuz\"] --> B[\"Transit pétrolier réduit\"]\n  A --> C[\"Primes d'assurance en hausse\"]\n  B --> D[\"Prime de risque sur le Brent\"]\n  E[\"Offre abondante ailleurs\"] --> F[\"Prix contenus vers 90-95 $\"]\n  D --> F"
+    },
+    {
+     "type": "callout",
+     "tone": "info",
+     "title": "Informations contradictoires",
+     "md": "Le Qatar évoque des contacts en cours ; le ministère iranien des Affaires étrangères affirme qu'il n'y a pas de négociation avec les États-Unis. Les dégâts revendiqués par les Gardiens de la révolution ne sont pas vérifiés."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261119-houthis-frappes-arabie-saoudite",
+   "title": "Les Houthis frappent Riyad et revendiquent une attaque sur la raffinerie de Ras Tanura",
+   "summary": "Une attaque de drone houthie a blessé 11 personnes le 24 novembre dans la tour du Fonds public d'investissement (PIF), plus haut gratte-ciel de Riyad, déjà touchée sans victime le 19 novembre. Le 25 novembre, les Houthis ont revendiqué une attaque contre la raffinerie de Ras Tanura (550 000 barils/jour) ; la coalition saoudienne dit avoir abattu quatre drones sans confirmer de dégâts, mais des images satellitaires montrent une vaste fumée. Ces attaques ont entraîné l'annulation de la plupart des vols internationaux vers Riyad selon Reuters.",
+   "date": "2026-11-19",
+   "status": "active",
+   "severity": "critical",
+   "themes": [
+    "conflits-securite",
+    "energie"
+   ],
+   "tags": [
+    "arabie saoudite",
+    "houthis",
+    "yemen",
+    "riyad",
+    "ras tanura",
+    "aramco",
+    "pif",
+    "iran"
+   ],
+   "location": {
+    "name": "Riyad",
+    "country": "SA",
+    "lat": 24.7136,
+    "lng": 46.6753,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "Al Jazeera",
+     "title": "Saudi civil defence says 11 injured in Houthi drone attack on Riyadh tower",
+     "url": "https://www.aljazeera.com/news/2026/11/24/saudi-led-coalition-condemns-terrorist-attack-on-tower-in-riyadh",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "Bloomberg",
+     "title": "Houthi Attack on Riyadh Tower Injures 11 People, Saudis Say",
+     "url": "https://www.bloomberg.com/news/articles/2026-11-24/riyadh-s-finance-hub-attacked-saudi-anti-houthi-coalition-says",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "The National",
+     "title": "Saudi defences destroy drones in Ras Tanura as footage shows smoke from refinery",
+     "url": "https://www.thenationalnews.com/news/gulf/2026/11/25/yemens-houthis-say-they-attacked-saudi-arabias-ras-tanura-refinery/",
+     "published_at": "2026-11-25"
+    },
+    {
+     "outlet": "U.S. News (Reuters)",
+     "title": "Yemen's Houthis Claim Attack on Saudi Arabia's Largest Refinery",
+     "url": "https://www.usnews.com/news/world/articles/2026-11-25/yemens-houthis-say-they-attacked-saudi-oil-refinery-and-riyadh-financial-district",
+     "published_at": "2026-11-25"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-19",
+     "text": "Première frappe sur la tour du PIF dans le quartier financier de Riyad : dégâts, pas de blessé.",
+     "severity": "high"
+    },
+    {
+     "at": "2026-11-24",
+     "text": "Deuxième frappe sur la même tour : 11 blessés (ressortissants saoudiens, indiens, népalais et égyptiens).",
+     "severity": "critical"
+    },
+    {
+     "at": "2026-11-25",
+     "text": "Revendication houthie d'une attaque sur Ras Tanura ; Riyad annonce la destruction de quatre drones, sans confirmer de dégâts.",
+     "severity": "critical"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Pétrole",
+     "direction": "bullish",
+     "horizon": "days",
+     "confidence": "medium",
+     "rationale": "Le risque sur les infrastructures saoudiennes soutient le prix du Brent."
+    },
+    {
+     "sector": "Transport aérien",
+     "direction": "bearish",
+     "horizon": "weeks",
+     "confidence": "medium",
+     "rationale": "Annulation de la plupart des vols internationaux vers Riyad."
+    }
+   ],
+   "blocks": [
+    {
+     "id": "lieux",
+     "type": "map_points",
+     "title": "Sites visés",
+     "points": [
+      {
+       "name": "Tour du PIF, quartier financier King Abdullah",
+       "lat": 24.7629,
+       "lng": 46.6406,
+       "note": "Frappes des 19 et 24 novembre"
+      },
+      {
+       "name": "Raffinerie de Ras Tanura",
+       "lat": 26.6436,
+       "lng": 50.1597,
+       "note": "Attaque revendiquée le 25 novembre, non confirmée"
+      }
+     ]
+    },
+    {
+     "type": "callout",
+     "tone": "warning",
+     "title": "Non confirmé",
+     "md": "Ni le gouvernement saoudien ni Aramco n'ont confirmé de dégâts ou d'arrêt de production à Ras Tanura (16 % de la capacité de raffinage saoudienne)."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261124-huawei-condamnation-new-york",
+   "title": "Huawei reconnu coupable de fraude bancaire et de vol de secrets commerciaux aux États-Unis",
+   "summary": "Un jury fédéral de Brooklyn a déclaré Huawei coupable le 24 novembre de 10 des 12 chefs d'accusation, dont fraude bancaire, fraude électronique, complot de blanchiment, violation des sanctions contre l'Iran et complot de vol de secrets commerciaux. Le groupe a été acquitté du chef le plus grave (association de malfaiteurs au titre de la loi RICO) et d'entrave à la justice. Huawei conteste un verdict « sans fondement » et risque des pénalités potentiellement chiffrées en milliards de dollars.",
+   "date": "2026-11-24",
+   "status": "monitoring",
+   "severity": "high",
+   "themes": [
+    "tech-semis",
+    "logistique-commerce",
+    "diplomatie"
+   ],
+   "tags": [
+    "huawei",
+    "chine",
+    "etats-unis",
+    "iran",
+    "sanctions",
+    "justice"
+   ],
+   "location": {
+    "name": "Brooklyn, New York",
+    "country": "US",
+    "lat": 40.6958,
+    "lng": -73.9896,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "CNN",
+     "title": "US court convicts China's Huawei for fraud, conspiring to steal trade secrets, in sprawling trial over Iran business",
+     "url": "https://www.cnn.com/2026/11/24/china/china-huawei-iran-conviction-intl-hnk",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "TIME",
+     "title": "China's Huawei Convicted in U.S. Over Bank Fraud, Iran Ties",
+     "url": "https://time.com/article/2026/11/25/huawei-guilty-crimes-fraud-conspiracy-sanctions-us-china/",
+     "published_at": "2026-11-25"
+    },
+    {
+     "outlet": "U.S. News (AP)",
+     "title": "Chinese Tech Giant Huawei Is Guilty of Conspiracy to Steal Trade Secrets, US Jury Finds",
+     "url": "https://www.usnews.com/news/best-states/new-york/articles/2026-11-24/chinese-tech-giant-huawei-is-guilty-of-conspiracy-to-steal-trade-secrets-us-jury-finds",
+     "published_at": "2026-11-24"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-24",
+     "text": "Verdict : coupable de 10 chefs sur 12, acquitté du chef RICO ; filiales Huawei Device également condamnées. La date de la peine n'est pas connue.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Tech / Semi-conducteurs",
+     "direction": "volatile",
+     "horizon": "months",
+     "confidence": "low",
+     "rationale": "Nouvelle source de friction technologique sino-américaine, possible riposte de Pékin."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261124-chine-enquete-chen-jining",
+   "title": "Chine : enquête anticorruption contre Chen Jining, chef du Parti à Shanghai",
+   "summary": "La Commission centrale d'inspection disciplinaire a ouvert le 24 novembre une enquête contre Chen Jining, secrétaire du Parti à Shanghai et membre du Bureau politique, pour « graves violations de la discipline et de la loi », formule désignant habituellement la corruption. C'est le premier chef de Shanghai en exercice visé depuis 2006 et le quatrième membre du Bureau politique ciblé depuis l'an dernier, après les généraux Zhang Youxia et He Weidong et Ma Xingrui.",
+   "date": "2026-11-24",
+   "status": "monitoring",
+   "severity": "high",
+   "themes": [
+    "politique-interieure"
+   ],
+   "tags": [
+    "chine",
+    "parti communiste",
+    "shanghai",
+    "xi jinping",
+    "anticorruption",
+    "chen jining"
+   ],
+   "location": {
+    "name": "Shanghai",
+    "country": "CN",
+    "lat": 31.2304,
+    "lng": 121.4737,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "Al Jazeera",
+     "title": "China probes Shanghai party chief Chen Jining over corruption",
+     "url": "https://www.aljazeera.com/news/2026/11/24/xis-anti-corruption-campaign-targets-shanghai-party-chief-chen-jining",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "NPR",
+     "title": "China investigates Politburo member and Shanghai party chief Chen Jining",
+     "url": "https://www.npr.org/2026/11/25/nx-s1-6053801/china-investigation-politburo-shanghai-party",
+     "published_at": "2026-11-25"
+    },
+    {
+     "outlet": "South China Morning Post",
+     "title": "Shanghai party chief faces corruption probe",
+     "url": "https://www.scmp.com/news/china/politics/article/3375640/shanghai-party-chief-faces-corruption-probe",
+     "published_at": "2026-11-24"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-24",
+     "text": "Annonce de l'enquête par Xinhua ; le comité permanent du Parti à Shanghai exprime son « ferme soutien » à la décision.",
+     "severity": "high"
+    }
+   ],
+   "blocks": [
+    {
+     "type": "text",
+     "md": "**Pourquoi c'est important.** Le poste de Shanghai est traditionnellement un tremplin vers le sommet du Parti. La purge, sans précédent par son ampleur au sein du Bureau politique (24 membres), renforce la concentration du pouvoir autour de Xi Jinping avant le prochain congrès."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261122-cop31-echec-antalya",
+   "title": "La COP31 d'Antalya s'achève sans accord global",
+   "summary": "La conférence climat de l'ONU à Antalya (Turquie) s'est terminée le 22 novembre, après près de deux jours de prolongation, sans adopter sa décision politique principale, une première depuis Copenhague en 2009. L'UE et des pays vulnérables ont rejeté le projet de « Pacte d'Antalya » qui ne mentionnait pas les énergies fossiles et avançait peu sur la finance climat. Des progrès techniques ont été obtenus sur les marchés carbone (article 6) et les indicateurs d'adaptation ; António Guterres a parlé d'un revers « profondément décevant ».",
+   "date": "2026-11-22",
+   "status": "resolved",
+   "ended_on": "2026-11-22",
+   "severity": "high",
+   "themes": [
+    "catastrophes-climat",
+    "diplomatie",
+    "energie"
+   ],
+   "tags": [
+    "cop31",
+    "turquie",
+    "climat",
+    "union europeenne",
+    "onu",
+    "energies fossiles"
+   ],
+   "location": {
+    "name": "Antalya",
+    "country": "TR",
+    "lat": 36.8969,
+    "lng": 30.7133,
+    "precision": "city"
+   },
+   "sources": [
+    {
+     "outlet": "Kleinman Center for Energy Policy (UPenn)",
+     "title": "Reflections from COP31",
+     "url": "https://kleinmanenergy.upenn.edu/commentary/blog/reflections-from-cop31/",
+     "published_at": "2026-11-24"
+    },
+    {
+     "outlet": "Latin Times",
+     "title": "COP31 collapses after EU and vulnerable nations reject a climate pact that avoids naming fossil fuels",
+     "url": "https://www.latintimes.com/cop31-collapse-antaly-climate-pact-fossil-fuels-601722",
+     "published_at": "2026-11-22"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-22",
+     "text": "Clôture sans décision globale ; le président de la COP31, Murat Kurum, annonce qu'il n'y aura plus de nouveau texte.",
+     "severity": "high"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Énergie",
+     "direction": "volatile",
+     "horizon": "months",
+     "confidence": "low",
+     "rationale": "Absence de signal multilatéral sur la sortie des fossiles ; effet direct limité sur les prix."
+    }
+   ],
+   "blocks": [
+    {
+     "type": "callout",
+     "tone": "info",
+     "title": "Sources à compléter",
+     "md": "Événement documenté par des sources secondaires concordantes ; à recouper avec les communiqués de la CCNUCC lors d'une prochaine session."
+    }
+   ]
+  },
+  {
+   "id": "evt-20261120-perou-seisme-junin",
+   "title": "Pérou : séisme de magnitude 6,7 dans la région de Junín",
+   "summary": "Un séisme de magnitude 6,7 a frappé la région de Junín le 20 novembre, faisant un mort, 15 blessés et 853 sans-abri selon la protection civile péruvienne. L'état d'urgence a été décrété dans plusieurs districts de Huánuco, Junín et Pasco du 22 novembre 2026 au 20 janvier 2027.",
+   "date": "2026-11-20",
+   "status": "monitoring",
+   "severity": "moderate",
+   "themes": [
+    "catastrophes-climat"
+   ],
+   "tags": [
+    "perou",
+    "seisme",
+    "junin"
+   ],
+   "location": {
+    "name": "Région de Junín",
+    "country": "PE",
+    "lat": -11.5,
+    "lng": -75,
+    "precision": "region"
+   },
+   "sources": [
+    {
+     "outlet": "PAHO/WHO",
+     "title": "Natural Hazards Monitoring - 23 November 2026",
+     "url": "https://www.paho.org/en/natural-hazards-monitoring/natural-hazards-monitoring-23-november-2026",
+     "published_at": "2026-11-23"
+    }
+   ],
+   "updates": [
+    {
+     "at": "2026-11-23",
+     "text": "Bilan : 1 mort, 15 blessés, 853 sans-abri ; état d'urgence dans trois régions.",
+     "severity": "moderate"
+    }
+   ],
+   "impacts": [
+    {
+     "sector": "Métaux",
+     "direction": "volatile",
+     "horizon": "days",
+     "confidence": "low",
+     "rationale": "Junín et Pasco sont des régions minières (zinc, plomb, cuivre) ; aucune perturbation de production signalée à ce stade."
+    }
+   ]
+  }
+ ],
+ "links": [
+  {
+   "from": "evt-20261112-nvidia-huang-depart-retour",
+   "to": "evt-20261119-wall-street-correction-ia",
+   "type": "causes",
+   "confidence": "medium",
+   "rationale": "L'éviction de Jensen Huang et la chute de Nvidia sont citées parmi les principaux moteurs de la correction."
+  },
+  {
+   "from": "evt-20261119-anthropic-introduction-bourse",
+   "to": "evt-20261119-wall-street-correction-ia",
+   "type": "relates_to",
+   "confidence": "medium",
+   "rationale": "L'introduction record d'Anthropic intervient au cœur de la déroute des valeurs de l'IA."
+  },
+  {
+   "from": "evt-20261124-usa-droits-douane-section-301",
+   "to": "evt-20261119-wall-street-correction-ia",
+   "type": "relates_to",
+   "confidence": "medium",
+   "rationale": "Les projets de droits de douane ont aggravé la baisse des valeurs technologiques les 24 et 25 novembre."
+  },
+  {
+   "from": "evt-20261125-usa-inflation-pce-octobre",
+   "to": "evt-20261119-wall-street-correction-ia",
+   "type": "relates_to",
+   "confidence": "medium",
+   "rationale": "Une inflation tenace et la perspective d'une hausse de taux pèsent sur les valorisations."
+  },
+  {
+   "from": "evt-20261124-usa-droits-douane-section-301",
+   "to": "evt-20261125-usa-inflation-pce-octobre",
+   "type": "relates_to",
+   "confidence": "low",
+   "rationale": "De nouveaux droits de douane risquent d'entretenir l'inflation que la Fed cherche à combattre."
+  },
+  {
+   "from": "evt-20261124-huawei-condamnation-new-york",
+   "to": "evt-20261124-usa-droits-douane-section-301",
+   "type": "relates_to",
+   "confidence": "low",
+   "rationale": "Deux fronts simultanés de tension commerciale et technologique entre Washington et Pékin."
+  },
+  {
+   "from": "evt-20261119-houthis-frappes-arabie-saoudite",
+   "to": "evt-20261124-iran-ormuz-durcissement",
+   "type": "relates_to",
+   "confidence": "medium",
+   "rationale": "Les frappes houthies sur l'Arabie saoudite s'inscrivent dans le conflit régional lié à l'Iran et soutiennent avec Ormuz la prime de risque pétrolière."
+  },
+  {
+   "from": "evt-20261121-ukraine-frappe-navire-golfe-finlande",
+   "to": "evt-20261110-ukraine-negociations-abou-dhabi",
+   "type": "relates_to",
+   "confidence": "medium",
+   "rationale": "L'extension des opérations à la Baltique intervient alors que les négociations de paix sont au point mort."
+  }
+ ],
+ "briefing": {
+  "date": "2026-11-26",
+  "title": "Briefing du jeudi 26 novembre 2026",
+  "top": [
+   {
+    "event_id": "evt-20261119-wall-street-correction-ia",
+    "why": "Pire semaine depuis avril 2025 et volatilité extrême autour des valeurs de l'IA."
+   },
+   {
+    "event_id": "evt-20261124-iran-ormuz-durcissement",
+    "why": "Le détroit d'Ormuz reste fermé et Téhéran durcit ses conditions, maintenant une prime de risque sur le pétrole."
+   },
+   {
+    "event_id": "evt-20261119-houthis-frappes-arabie-saoudite",
+    "why": "Les Houthis frappent désormais le cœur financier et pétrolier de l'Arabie saoudite."
+   }
+  ],
+  "macro": "Aux États-Unis, l'inflation PCE atteint 3,8 % sur un an en octobre et 3,3 % hors alimentation et énergie, tandis que la croissance du troisième trimestre est révisée à 4,3 %. Avec une économie aussi dynamique, les marchés à terme jugent quasi certaine une hausse de 25 points de base des taux de la Fed les 8 et 9 décembre. Washington prépare parallèlement de nouveaux droits de douane contre 14 partenaires au titre de la section 301, ce qui ravive le risque inflationniste et les tensions commerciales, notamment avec la Chine, déjà visée par la condamnation de Huawei.",
+  "markets": "Après une semaine noire (S&P 500 -8,6 %), Wall Street a rebondi lundi avec le retour de Jensen Huang chez Nvidia, puis a terminé mercredi en léger repli (S&P 500 -0,25 % à 7 182,78) après une chute de plus de 3 % en séance. Le CAC 40 a cédé 0,75 % à 7 980,57. Le Brent est remonté vers 91-95 $ selon les contrats, et le bitcoin évolue sous 60 000 $. Marché américain fermé jeudi pour Thanksgiving.",
+  "watch": [
+   "Séance écourtée de Wall Street vendredi 27 novembre et suite de la volatilité sur Nvidia et Anthropic",
+   "Discours des responsables de la Fed avant la réunion des 8-9 décembre",
+   "Médiation qatarie et incidents dans le détroit d'Ormuz ; confirmation éventuelle de dégâts à Ras Tanura",
+   "Réactions de l'UE, de la Chine et de l'Asie aux projets de droits de douane américains",
+   "Date d'un nouveau cycle de négociations sur l'Ukraine et risques d'incident en mer Baltique"
+  ]
+ },
+ "markets": [
+  {
+   "date": "2026-11-20",
+   "asset": "SPX",
+   "close": 6910.39,
+   "change_pct": -3.7,
+   "source_url": "https://finance.yahoo.com/markets/stocks/articles/major-us-stock-indexes-fared-213016263.html"
+  },
+  {
+   "date": "2026-11-23",
+   "asset": "SPX",
+   "close": 7237.17,
+   "change_pct": 4.7,
+   "source_url": "https://www.stamfordadvocate.com/business/article/how-major-us-stock-indexes-fared-monday-11-23-2026-22546509.php"
+  },
+  {
+   "date": "2026-11-25",
+   "asset": "SPX",
+   "close": 7182.78,
+   "change_pct": -0.25,
+   "source_url": "https://wtop.com/national/2026/11/how-major-us-stock-indexes-fared-wednesday-11-25-2026"
+  },
+  {
+   "date": "2026-11-25",
+   "asset": "CAC40",
+   "close": 7980.57,
+   "change_pct": -0.75,
+   "source_url": "https://www.ideal-investisseur.fr/bourse-cryptos/le-cac-40-recule-en-cloture-plombe-par-les-semi-conducteurs-et-lelectrique-34079.html"
+  }
+ ]
+}
