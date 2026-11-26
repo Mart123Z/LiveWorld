@@ -1,12 +1,12 @@
 // LiveWorld — application principale
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS } from './config.js?v=202611261011';
-import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611261011';
-import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611261011';
-import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611261011';
-import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611261011';
-import { WorldMap } from './map.js?v=202611261011';
-import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611261011';
-import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611261011';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS, INBOX } from './config.js?v=202611261020';
+import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611261020';
+import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611261020';
+import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611261020';
+import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611261020';
+import { WorldMap } from './map.js?v=202611261020';
+import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611261020';
+import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611261020';
 
 const pref = { get(k, d) { try { const v = localStorage.getItem('lw:' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('lw:' + k, JSON.stringify(v)); } catch {} } };
 const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
@@ -164,9 +164,9 @@ function welcomeHtml() {
   if (!canWrite()) return `<div class="welcome"><h2>Bienvenue sur LiveWorld</h2><p>La base est encore vide. Les événements apparaîtront dès qu’un éditeur aura importé une veille.</p></div>`;
   return `<div class="welcome"><h2>Bienvenue sur LiveWorld</h2>
   <p>La base est vide. Pour commencer :</p>
-  <ol><li><b>Exporter → Copier le prompt du jour</b>, puis demandez la veille à Claude dans votre Projet « LiveWorld ».</li>
-  <li><b>Importer</b> le fichier JSON que Claude vous renvoie.</li>
-  <li>Recommencez chaque jour : seuls les nouveautés et les compléments sont ajoutés.</li></ol>
+  <ol><li><b>Mettre à jour</b> : récupère la veille automatique que Claude dépose ${esc(INBOX.schedule)}.</li>
+  <li>Ou manuellement : <b>Exporter</b> le contexte, le donner à Claude, puis <b>Importer</b> le fichier JSON qu’il renvoie.</li>
+  <li>Chaque veille ne fait qu’ajouter ou compléter : rien n’est écrasé.</li></ol>
   <div class="row"><button class="btn pri" data-act="import">Importer un lot</button><button class="btn" data-act="demo">Charger la démo</button></div>
   <p class="meta">Le guide complet est dans le fichier README du dépôt GitHub.</p></div>`;
 }
@@ -339,6 +339,46 @@ function openLinkPicker(e) {
     };
   });
 }
+
+// ---------- Veille automatique (bouton « Mettre à jour ») ----------
+let syncing = false;
+async function fetchInboxIndex() {
+  const get = async base => { try { const r = await fetch(base + 'index.json?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) return []; const j = await r.json(); return (j.batches || []).map(b => ({ ...b, base })); } catch { return []; } };
+  const all = [...await get(INBOX.raw), ...await get(INBOX.local)];
+  const seen = new Set(); return all.filter(b => b.batch_id && b.file && !seen.has(b.batch_id) && seen.add(b.batch_id)).sort((a, b) => a.generated_at < b.generated_at ? -1 : 1);
+}
+async function syncInbox(manual = false) {
+  if (syncing) return; syncing = true;
+  const btn = $('#updateBtn'); btn.disabled = true; btn.textContent = 'Recherche…';
+  try {
+    const list = await fetchInboxIndex();
+    const pending = list.filter(b => !S.db.batches[b.batch_id]);
+    const last = list.at(-1);
+    if (!pending.length) {
+      if (manual) openModal('Mettre à jour', `<p><b>Le site est à jour.</b> ${last ? `Dernière veille automatique : ${esc(fmtDT(last.generated_at))}.` : 'Aucune veille automatique n’a encore été déposée.'}</p>
+        <p>La veille automatique de Claude tourne ${esc(INBOX.schedule)} et dépose ses résultats ; ce bouton les récupère.</p>
+        <p class="meta">Pour lancer une veille tout de suite : ouvrez <a href="${INBOX.routinesUrl}" target="_blank" rel="noopener">vos tâches planifiées Claude</a> → « Veille LiveWorld quotidienne » → <b>Exécuter maintenant</b>, attendez la fin (10 à 20 minutes), puis revenez cliquer sur « Mettre à jour ».</p>`);
+      return;
+    }
+    if (!canWrite()) { if (manual) toast(`${plural(pending.length, 'veille disponible', 'veilles disponibles')} : un éditeur ou l’administrateur doit ouvrir le site pour l’importer.`); return; }
+    const total = { new: 0, updated: 0, links: 0, rejected: 0 }; let firstCrit = null;
+    for (const b of pending) {
+      btn.textContent = `Import ${pending.indexOf(b) + 1}/${pending.length}…`;
+      let text; try { const r = await fetch(b.base + b.file + '?t=' + Date.now(), { cache: 'no-store' }); if (!r.ok) throw new Error(r.status); text = await r.text(); } catch (e) { toast(`Lot ${esc(b.batch_id)} illisible (${esc(e.message)}).`, 'err'); continue; }
+      for (const raw of parseInput(text)) {
+        const an = analyzeBatch({ ...raw, batch_id: b.batch_id }, S.db);
+        if (an.fatal.length) { toast(`Lot ${esc(b.batch_id)} refusé : ${esc(an.fatal.join(' ; '))}`, 'err'); continue; }
+        const { changes, counts } = applyBatch(S.db, an);
+        if (!await save(changes)) return;
+        for (const k in total) total[k] += counts[k] || 0;
+        firstCrit ||= an.events.find(x => x.kind === 'new' && x.inc.severity === 'critical')?.inc.id;
+      }
+    }
+    toast(`Mise à jour : <b>${total.new}</b> nouvel(s) événement(s), <b>${total.updated}</b> mis à jour, ${total.links} lien(s)${total.rejected ? `, ${total.rejected} rejeté(s)` : ''}.`, 'ok');
+    S.D = today(); if (firstCrit) select(firstCrit, { jump: true }); else renderAll();
+  } finally { syncing = false; btn.disabled = false; btn.textContent = 'Mettre à jour'; }
+}
+$('#updateBtn').onclick = () => syncInbox(true);
 
 // ---------- Import ----------
 function openImport() {
@@ -653,6 +693,7 @@ async function boot() {
   try { S.db = await S.store.load(); }
   catch (e) { console.error(e); toast('Lecture des données impossible : ' + esc(authError(e)), 'err'); }
   renderAll();
+  if (canWrite()) { syncInbox(false); setInterval(() => syncInbox(false), 30 * 60e3); }
   if (S.store.mode === 'firebase') toast(`Connecté : <b>${esc(displayName(S.store.profile))}</b> · ${esc(ROLES[S.role])}`);
   refreshLive(); setInterval(() => { if (S.D === today()) refreshLive(); }, 5 * 60e3);
   // Changement de jour pendant que la page reste ouverte

@@ -206,7 +206,7 @@ textarea.out{min-height:220px}
   .mapwrap{aspect-ratio:1.2}.count span{display:none}.count{padding:6px 10px}
   .legend{font-size:11px;gap:7px;left:8px;bottom:8px;padding:5px 8px}
   .legend span:nth-child(n+4){display:none}
-  .brand h1{font-size:18px}.actions .btn{padding:7px 10px}
+  .brand h1{font-size:18px}.actions .btn{padding:7px 10px}.actions{flex-wrap:wrap}#importBtn,#exportBtn{font-weight:500}
   .win::before{display:none}
   .grid2{grid-template-columns:1fr}
   dialog{width:100vw;max-height:100dvh;height:100dvh;border-radius:0;margin:0;max-width:100vw}

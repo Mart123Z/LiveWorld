@@ -66,3 +66,12 @@ export const EXCHANGES = [
 ];
 
 export const WINDOWS = [[1, '1 j'], [7, '7 j'], [30, '30 j'], [90, '90 j'], ['all', 'Tout']];
+
+// Veille automatique : la tâche planifiée Claude dépose ses lots dans inbox/ sur cette branche du dépôt.
+// Le site lit aussi inbox/ sur le site lui-même (si un lot est poussé sur main).
+export const INBOX = {
+  raw: 'https://raw.githubusercontent.com/Mart123Z/LiveWorld/refs/heads/claude/liveworld-inbox/inbox/',
+  local: 'inbox/',
+  schedule: 'chaque jour vers 6 h 30 (heure de Paris)',
+  routinesUrl: 'https://claude.ai/code/routines',
+};
