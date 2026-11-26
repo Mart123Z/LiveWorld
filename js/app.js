@@ -1,12 +1,12 @@
 // LiveWorld — application principale
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS } from './config.js?v=202611260959';
-import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611260959';
-import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611260959';
-import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611260959';
-import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611260959';
-import { WorldMap } from './map.js?v=202611260959';
-import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611260959';
-import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611260959';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS } from './config.js?v=202611261011';
+import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611261011';
+import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611261011';
+import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611261011';
+import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611261011';
+import { WorldMap } from './map.js?v=202611261011';
+import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611261011';
+import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611261011';
 
 const pref = { get(k, d) { try { const v = localStorage.getItem('lw:' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('lw:' + k, JSON.stringify(v)); } catch {} } };
 const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
@@ -399,7 +399,14 @@ function openImport() {
 $('#importBtn').onclick = () => canWrite() && openImport();
 
 // ---------- Export ----------
-function openExport() {
+let instructionsCache = null;
+async function getInstructions() {
+  if (instructionsCache) return instructionsCache;
+  try { const r = await fetch('templates/INSTRUCTIONS_CLAUDE.md', { cache: 'no-cache' }); if (r.ok) instructionsCache = await r.text(); } catch {}
+  return instructionsCache;
+}
+async function openExport() {
+  const ins = await getInstructions();
   const yrs = [...new Set(liveEvents(S.db).map(e => e.date.slice(0, 4)))].sort().reverse();
   const r = dataRange(S.db);
   openModal('Exporter', `
@@ -407,7 +414,8 @@ function openExport() {
     <div class="seg"><label><input type="radio" name="pk" value="daily" checked> Veille quotidienne</label><label><input type="radio" name="pk" value="extra"> Session complémentaire</label><label><input type="radio" name="pk" value="deep"> Approfondir un sujet</label></div>
     <label class="f">Précision facultative (sujet à privilégier, ou sujet à approfondir)<input type="text" id="pFocus" placeholder="ex. Moyen-Orient, semi-conducteurs, evt-20261120-…"></label>
     <div class="row"><button class="btn pri" id="prepAll">Télécharger le contexte + copier le prompt</button><button class="btn" id="copyPrompt">Copier le prompt seul</button></div>
-    <p class="meta">Le contexte téléchargé couvre les 90 derniers jours en mode compact. Joignez-le à une nouvelle conversation du Projet « LiveWorld », puis collez le prompt.</p>
+    <div class="seg" style="margin-top:8px"><label><input type="checkbox" id="selfC" ${pref.get('selfContained', true) ? 'checked' : ''}> Fichier autonome (instructions, demande et modèle inclus)</label></div>
+    <p class="meta">Fichier autonome : joignez-le à <b>n’importe quelle</b> conversation Claude et écrivez simplement « Fais ce qui est demandé dans le fichier ». Décochez si vous utilisez un Projet Claude qui contient déjà les instructions (fichier plus léger). Le contexte couvre les 90 derniers jours en mode compact.</p>
     <h3>2. Export personnalisé</h3>
     <div class="seg"><label><input type="radio" name="xk" value="context" checked> Contexte pour Claude (.md)</label><label><input type="radio" name="xk" value="summary"> Résumé lisible (.md)</label><label><input type="radio" name="xk" value="backup"> Sauvegarde complète (.json)</label></div>
     <div class="seg" style="margin-top:8px" id="scopeSeg"><label><input type="radio" name="sk" value="recent" checked> 90 derniers jours</label><label><input type="radio" name="sk" value="month"> Un mois</label><label><input type="radio" name="sk" value="year"> Une année</label><label><input type="radio" name="sk" value="range"> Période</label><label><input type="radio" name="sk" value="all"> Tout</label></div>
@@ -421,20 +429,24 @@ function openExport() {
       const k = val('xk'), sk = val('sk');
       $('#xMonth', b).hidden = sk !== 'month'; $('#xYear', b).hidden = sk !== 'year'; $('#xFrom', b).hidden = $('#xTo', b).hidden = sk !== 'range';
       $('#scopeSeg', b).hidden = k === 'backup'; $('#detSeg', b).hidden = k !== 'context';
-      const txt = k === 'context' ? contextMd(S.db, scope(), val('dk')) : k === 'summary' ? summaryMd(S.db, scope()) : backupJson(S.db);
+      const txt = k === 'context' ? contextMd(S.db, scope(), val('dk'), { instructions: $('#selfC', b).checked ? ins : null }) : k === 'summary' ? summaryMd(S.db, scope()) : backupJson(S.db);
       $('#xOut', b).value = txt.length > 60000 ? txt.slice(0, 60000) + '\n…(aperçu tronqué, le fichier est complet)' : txt;
       $('#xSize', b).textContent = `${Math.round(txt.length / 1024)} Ko · ~${fmtNum(Math.round(txt.length / 3.5))} tokens`;
       return { k, txt };
     };
     const fname = k => { const sc = scopeRange(scope()); const tag = val('sk') === 'all' ? 'tout' : val('sk') === 'recent' ? '90j' : (sc.from + '_' + sc.to); return k === 'backup' ? `liveworld-sauvegarde-${today()}.json` : `liveworld-${k === 'context' ? 'contexte' : 'resume'}-${tag}.md`; };
     $$('input,select', b).forEach(i => i.addEventListener('change', build)); build();
+    $('#selfC', b).addEventListener('change', e => pref.set('selfContained', e.target.checked));
     $('#xDl', b).onclick = () => { const { k, txt } = build(); download(fname(k), txt, k === 'backup' ? 'application/json' : 'text/markdown'); };
     $('#xCopy', b).onclick = async () => { const { txt } = build(); toast(await copyText(txt) ? 'Copié.' : 'Copie impossible : utilisez Télécharger.'); };
     const prompt = () => dailyPrompt(S.db, val('pk'), $('#pFocus', b).value);
     $('#copyPrompt', b).onclick = async () => toast(await copyText(prompt()) ? 'Prompt copié.' : 'Copie impossible.');
     $('#prepAll', b).onclick = async () => {
-      download(`liveworld-contexte-${today()}.md`, contextMd(S.db, { kind: 'range', from: addDays(today(), -89), to: today() }, 'compact'), 'text/markdown');
-      toast(await copyText(prompt()) ? 'Contexte téléchargé et prompt copié.' : 'Contexte téléchargé. Copiez le prompt avec le bouton dédié.', 'ok');
+      const self = $('#selfC', b).checked;
+      if (self && !ins) toast('Instructions introuvables : le fichier ne les contiendra pas.', 'err');
+      download(`liveworld-contexte-${today()}.md`, contextMd(S.db, { kind: 'range', from: addDays(today(), -89), to: today() }, 'compact', { instructions: self ? ins : null, prompt: prompt() }), 'text/markdown');
+      const short = self ? 'Fais ce qui est demandé dans le fichier joint (partie 0), en suivant ses instructions (partie A). Livre un seul fichier JSON liveworld.batch/v1.' : prompt();
+      toast(await copyText(short) ? 'Contexte téléchargé et prompt copié.' : 'Contexte téléchargé. Copiez le prompt avec le bouton dédié.', 'ok');
     };
   });
 }

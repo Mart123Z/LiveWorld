@@ -1,7 +1,7 @@
 // Exports : contexte pour Claude, résumé lisible, sauvegarde complète, prompt du jour
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, LINK_TYPES, DIR, ASSETS, BACKUP_SCHEMA } from './config.js?v=202611260959';
-import { liveEvents, lastActivity, liveLinks, currentImpacts, chainOf, snapshot } from './model.js?v=202611260959';
-import { today, fmtLong, dayOf, ts, mdText, fmtNum, addDays } from './util.js?v=202611260959';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, LINK_TYPES, DIR, ASSETS, BACKUP_SCHEMA } from './config.js?v=202611261011';
+import { liveEvents, lastActivity, liveLinks, currentImpacts, chainOf, snapshot } from './model.js?v=202611261011';
+import { today, fmtLong, dayOf, ts, mdText, fmtNum, addDays } from './util.js?v=202611261011';
 
 export function scopeRange(scope) {
   if (scope.kind === 'month') return { from: scope.month + '-01', to: addDays(nextMonth(scope.month) + '-01', -1), label: new Date(scope.month + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) };
@@ -16,7 +16,57 @@ const latestBriefing = (db, to = '9999') => Object.values(db.briefings).filter(b
 const line = s => String(s ?? '').replace(/\s+/g, ' ').trim();
 
 // ---------- Contexte pour Claude ----------
-export function contextMd(db, scope, detail = 'compact') {
+// Squelette minimal d'un lot, inclus dans le fichier de contexte autonome
+const SKELETON = `{
+  "schema": "liveworld.batch/v1",
+  "batch_id": "AAAA-MM-JJTHH-MM-claude",
+  "generated_at": "AAAA-MM-JJTHH:MM:00+01:00",
+  "author": "claude",
+  "request": "Résumé de la demande",
+  "coverage": { "from": "AAAA-MM-JJ", "to": "AAAA-MM-JJ" },
+  "notes": "Ce qui n'a pas pu être vérifié",
+  "events": [
+    {
+      "id": "evt-AAAAMMJJ-slug-court",
+      "title": "Titre factuel",
+      "summary": "2 à 5 phrases.",
+      "date": "AAAA-MM-JJ",
+      "status": "active",
+      "severity": "high",
+      "themes": ["diplomatie"],
+      "tags": ["pays", "acteur"],
+      "location": { "name": "Lieu", "country": "FR", "lat": 48.85, "lng": 2.35, "precision": "city" },
+      "sources": [ { "outlet": "Média", "title": "Titre de l'article", "url": "https://…", "published_at": "AAAA-MM-JJTHH:MM:00+01:00" } ],
+      "updates": [ { "at": "AAAA-MM-JJTHH:MM:00+01:00", "text": "Fait nouveau.", "severity": "high" } ],
+      "impacts": [ { "sector": "Énergie", "direction": "bullish", "horizon": "weeks", "confidence": "medium", "rationale": "Ce qui monte et pourquoi." } ],
+      "blocks": [
+        { "id": "chiffres", "type": "key_figures", "items": [ { "label": "Indicateur", "value": "12", "unit": "%", "source_url": "https://…" } ] },
+        { "type": "text", "md": "**Pourquoi c'est important.** …" }
+      ]
+    },
+    { "id": "evt-…-existant", "updates": [ { "at": "…", "text": "Mise à jour d'un événement déjà présent." } ], "sources": [ { "outlet": "…", "url": "https://…", "published_at": "…" } ] }
+  ],
+  "links": [ { "from": "evt-…", "to": "evt-…", "type": "causes", "confidence": "medium", "rationale": "Une phrase." } ],
+  "briefing": { "date": "AAAA-MM-JJ", "title": "Briefing du …", "top": [ { "event_id": "evt-…", "why": "…" } ], "macro": "…", "markets": "…", "watch": ["…"] },
+  "markets": [ { "date": "AAAA-MM-JJ", "asset": "BRENT", "close": 70.4, "change_pct": 0.6, "source_url": "https://…" } ]
+}`;
+
+// opts.instructions : texte de INSTRUCTIONS_CLAUDE.md à inclure (fichier autonome) ; opts.prompt : demande de la session
+export function contextMd(db, scope, detail = 'compact', opts = {}) {
+  const S = [];
+  const lb0 = latestBatch(db);
+  S.push(`# LiveWorld — Dossier de session pour Claude`, '');
+  if (opts.instructions) S.push(`> Ce fichier est **autonome** : il contient la demande (partie 0), tes instructions permanentes (partie A), l'état actuel de la base (partie B) et un squelette du fichier à produire (partie C). Lis-le en entier avant de commencer.`, '');
+  if (opts.prompt) S.push(`## 0. Demande de cette session`, '', opts.prompt, '');
+  if (!lb0) S.push(`> **Première session** : la base est vide. Couvre les 7 derniers jours (du ${addDays(today(), -7)} au ${today()}) et crée les événements majeurs de cette période.`, '');
+  if (opts.instructions) S.push(`---`, '', `# Partie A — Instructions permanentes`, '', opts.instructions.replace(/^(#{1,5}) /gm, '#$1 '), '', `---`, '', `# Partie B — État actuel de la base`, '');
+  const state = contextState(db, scope, detail, !!opts.instructions);
+  S.push(state);
+  if (opts.instructions) S.push('', `---`, '', `# Partie C — Squelette du fichier à produire`, '', 'Remplace chaque valeur d’exemple ; supprime les champs inutiles. Voir la partie A pour tous les champs et les 12 types de blocs.', '', '```json', SKELETON, '```', '');
+  return S.join('\n');
+}
+
+function contextState(db, scope, detail, embedded) {
   const r = scopeRange(scope);
   const evs = liveEvents(db).filter(e => inScope(e, r)).sort((a, b) => (lastActivity(b) > lastActivity(a) ? 1 : -1));
   const lb = latestBatch(db);
@@ -25,11 +75,10 @@ export function contextMd(db, scope, detail = 'compact') {
   const active = evs.filter(isActive), others = evs.filter(e => !isActive(e));
   const tags = {}; for (const e of evs) for (const t of e.tags || []) tags[t] = (tags[t] || 0) + 1;
   const L = [];
-  L.push(`# LiveWorld — Contexte pour Claude`, '');
   L.push(`- Exporté le : ${new Date().toISOString()} (${fmtLong(today())})`);
   L.push(`- Périmètre : ${r.label} · ${evs.length} événement(s) sur ${liveEvents(db).length} dans la base`);
   L.push(`- **Dernier lot importé : ${lb ? lb.generated_at + ' (' + lb.id + ')' : 'aucun'}**`);
-  L.push(`- Format attendu en retour : liveworld.batch/v1 (voir instructions du Projet)`, '');
+  L.push(`- Format attendu en retour : liveworld.batch/v1 (${embedded ? 'voir parties A et C' : 'voir instructions du Projet'})`, '');
   L.push(`> Règles : réutilise EXACTEMENT les id ci-dessous pour toute mise à jour ; n'envoie que le nouveau ;`);
   L.push(`> ne renvoie pas les sources déjà listées ; relie les nouveaux faits aux id existants via \`links\`.`, '');
 

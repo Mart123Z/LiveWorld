@@ -92,7 +92,9 @@ Gestion courante (⚙ **Réglages** → **Gérer les comptes**) :
 
 > Vous aviez commencé en mode local ? Connecté en Admin, dans le navigateur qui contient ces données : ⚙ **Réglages** → **Envoyer la base locale de ce navigateur vers Firebase**.
 
-## 3. Créer le Projet Claude « LiveWorld » (5 min, une seule fois)
+## 3. Créer le Projet Claude « LiveWorld » (facultatif, 5 min)
+
+> Le fichier de contexte exporté est **autonome** par défaut : il contient vos instructions, la demande du jour, l'état de la base et un modèle du fichier à produire. Il fonctionne donc dans **n'importe quelle** conversation Claude. Un Projet reste utile pour tout regrouper au même endroit ; dans ce cas, vous pouvez décocher « Fichier autonome » à l'export pour un fichier plus léger.
 
 1. Sur claude.ai : **Projets** → **Créer un projet** → nom : `LiveWorld`.
 2. **Instructions du projet** : collez tout le contenu de [`templates/INSTRUCTIONS_CLAUDE.md`](templates/INSTRUCTIONS_CLAUDE.md) (ou bouton *Réglages → Copier les instructions* sur le site).
@@ -102,7 +104,7 @@ Gestion courante (⚙ **Réglages** → **Gérer les comptes**) :
 ## 4. La routine quotidienne (2 min de manipulation)
 
 1. Sur le site : **Exporter** → *Veille quotidienne* → **Télécharger le contexte + copier le prompt**.
-2. Dans Claude : **nouvelle conversation dans le Projet LiveWorld** → joignez le fichier `liveworld-contexte-….md` → collez le prompt → envoyez.
+2. Dans Claude : **nouvelle conversation** (dans le Projet LiveWorld ou non) → joignez le fichier `liveworld-contexte-….md` → collez le prompt copié (« Fais ce qui est demandé dans le fichier joint… ») → envoyez.
 3. Claude fait ses recherches et livre `liveworld-batch-….json` (ou un bloc de code JSON).
 4. Sur le site : **Importer** → choisissez le fichier (ou collez le JSON) → **Analyser** → vérifiez l'aperçu → **Importer**.
 

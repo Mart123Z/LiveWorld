@@ -1,5 +1,5 @@
 // Marchés : statut des places (calcul local), cotations importées, quelques cours en direct gratuits
-import { EXCHANGES, ASSETS } from './config.js?v=202611260959';
+import { EXCHANGES, ASSETS } from './config.js?v=202611261011';
 
 export function exStatus(x, now = new Date()) {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: x.tz, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', weekday: 'short', hourCycle: 'h23' }).formatToParts(now).map(o => [o.type, o.value]));
