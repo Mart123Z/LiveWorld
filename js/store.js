@@ -1,5 +1,5 @@
 // Stockage : mode local (IndexedDB du navigateur) ou Firebase (Firestore + cache local)
-import { docId } from './util.js?v=202611261039';
+import { docId } from './util.js?v=202611272136';
 
 export const COLLECTIONS = ['events', 'links', 'briefings', 'markets', 'batches'];
 export const emptyDb = () => Object.fromEntries(COLLECTIONS.map(c => [c, {}]));
@@ -61,7 +61,7 @@ export class FirebaseStore {
   get role() { return this.profile?.role || null; }
 
   async init(onUser) {
-    this.fb = await import('../vendor/firebase.js?v=202611261039');
+    this.fb = await import('../vendor/firebase.js?v=202611272136');
     const { initializeApp, getAuth, getFirestore, onAuthStateChanged, setPersistence, browserLocalPersistence } = this.fb;
     this.app = initializeApp(this.config);
     this.auth = getAuth(this.app);

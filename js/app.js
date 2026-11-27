@@ -1,12 +1,12 @@
 // LiveWorld — application principale
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS, INBOX } from './config.js?v=202611261039';
-import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611261039';
-import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611261039';
-import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611261039';
-import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611261039';
-import { WorldMap } from './map.js?v=202611261039';
-import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611261039';
-import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611261039';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, DIR, HORIZON, CONF, LINK_TYPES, WINDOWS, BACKUP_SCHEMA, ASSETS, INBOX } from './config.js?v=202611272136';
+import { $, $$, esc, extLink, safeUrl, md, mdText, today, addDays, dayOf, fmtDay, fmtLong, fmtDT, ts, norm, download, copyText, readFile, fmtNum, plural, diffDays } from './util.js?v=202611272136';
+import { LocalStore, FirebaseStore, emptyDb, COLLECTIONS, ROLES, USERNAME_RE } from './store.js?v=202611272136';
+import { snapshot, visibleAt, visibleEvents, liveEvents, lastActivity, chainOf, liveLinks, isLive, analyzeBatch, applyBatch, parseInput, previewDiff, linkId, dataRange } from './model.js?v=202611272136';
+import { renderBlocks, hydrate, mapPoints } from './blocks.js?v=202611272136';
+import { WorldMap } from './map.js?v=202611272136';
+import { exchangesStatus, quotesAt, liveQuotes } from './markets.js?v=202611272136';
+import { contextMd, summaryMd, backupJson, dailyPrompt, eventMd, scopeRange } from './exporter.js?v=202611272136';
 
 const pref = { get(k, d) { try { const v = localStorage.getItem('lw:' + k); return v === null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('lw:' + k, JSON.stringify(v)); } catch {} } };
 const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('window', 7), themes: new Set(), sel: null, tab: 'dossier', fSev: 'all', fStatus: 'all', fSort: 'sev', live: {}, mini: null, miniDirty: true };
@@ -16,6 +16,24 @@ const S = { role: 'local', db: emptyDb(), store: null, D: today(), W: pref.get('
 const canWrite = () => ['local', 'admin', 'editor'].includes(S.role);
 const isAdmin = () => S.role === 'admin';
 const displayName = p => p?.username === 'admin' ? 'Admin' : (p?.username || '');
+
+// ---------- Mode d'affichage : sombre / clair / système ----------
+const THEMES_UI = { system: ['Système'], light: ['Clair'], dark: ['Sombre'] };
+const darkQuery = window.matchMedia ? matchMedia('(prefers-color-scheme: light)') : null;
+function applyTheme(t = pref.get('theme', 'system')) {
+  if (!THEMES_UI[t]) t = 'system';
+  const mode = t === 'system' ? (darkQuery?.matches ? 'light' : 'dark') : t;
+  const root = document.documentElement, changed = root.dataset.mode !== mode;
+  root.dataset.mode = mode; root.dataset.theme = t;
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', mode === 'light' ? '#f3f5f8' : '#0b0e12');
+  const ic = $('#themeIc'); if (ic) ic.setAttribute('href', '#i-' + t);
+  const btn = $('#themeBtn'); if (btn) { btn.title = `Affichage : ${THEMES_UI[t][0]} (cliquer pour changer)`; btn.setAttribute('aria-label', btn.title); }
+  if (changed && S.store) { $$('#pane .mermaid-box').forEach(x => x.removeAttribute('data-done')); renderPane(); }
+}
+function setTheme(t) { pref.set('theme', t); applyTheme(t); toast(`Affichage : ${THEMES_UI[t][0]}${t === 'system' ? ' (suit le réglage de l’appareil)' : ''}`); }
+darkQuery?.addEventListener?.('change', () => applyTheme());
+$('#themeBtn').onclick = () => { const order = ['system', 'light', 'dark']; const cur = pref.get('theme', 'system'); setTheme(order[(order.indexOf(cur) + 1) % 3]); };
+applyTheme();
 
 // ---------- Utilitaires d'interface ----------
 const sevTag = s => `<span class="sev ${esc(s)}">${esc(SEV[s] || s)}</span>`;
@@ -520,7 +538,11 @@ async function openSettings() {
   const localN = local ? Object.keys(local.events || {}).length : 0;
   const demoN = Object.values(S.db.events).filter(e => e.demo).length;
   const p = S.store.profile;
+  const th = pref.get('theme', 'system');
   openModal('Réglages', `
+    <h3>Affichage</h3>
+    <div class="seg" id="thSeg">${Object.entries(THEMES_UI).map(([k, [l]]) => `<label><input type="radio" name="th" value="${k}" ${th === k ? 'checked' : ''}><svg width="16" height="16"><use href="#i-${k}"/></svg> ${l}</label>`).join('')}</div>
+    <p class="meta">« Système » suit automatiquement le mode clair ou sombre de votre appareil.</p>
     ${fb ? `<h3>Mon compte</h3>
     <p>Connecté en tant que <b>${esc(displayName(p))}</b> · ${esc(ROLES[S.role] || S.role)}</p>
     <div class="row"><button class="btn" id="sPwd">Changer mon mot de passe</button><button class="btn" id="sOut">Se déconnecter</button></div>
@@ -538,6 +560,7 @@ async function openSettings() {
     <p class="meta">À mettre dans votre Projet Claude « LiveWorld » (voir README).</p>
     <div class="row"><button class="btn" id="sCopyIns">Copier les instructions</button><a class="btn" href="templates/liveworld-batch.schema.json" download>Schéma JSON</a><a class="btn" href="templates/exemple-batch.json" download>Exemple de lot</a><a class="btn" href="templates/PROMPT_QUOTIDIEN.md" target="_blank">Prompts</a></div>` : ''}`, b => {
     const on = (sel, fn) => { const el = $(sel, b); if (el) el.onclick = fn; };
+    $$('input[name=th]', b).forEach(r => r.onchange = () => setTheme(r.value));
     on('#sOut', async () => { await S.store.signOut(); location.reload(); });
     on('#sPwd', openPasswordChange);
     on('#sUsers', openUsers);

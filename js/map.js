@@ -1,6 +1,6 @@
 // Carte du monde (d3 + world-atlas, aucune tuile externe)
-import { SEV, SEV_COLOR, SEV_RANK, THEME_LABEL } from './config.js?v=202611261039';
-import { esc } from './util.js?v=202611261039';
+import { SEV, SEV_COLOR, SEV_RANK, THEME_LABEL } from './config.js?v=202611272136';
+import { esc } from './util.js?v=202611272136';
 
 export class WorldMap {
   constructor(svgEl, wrapEl, tipEl, onSelect) {
@@ -64,7 +64,7 @@ export class WorldMap {
       .on('mousemove', ev => this.moveTip(ev)).on('mouseleave', () => this.hideTip());
     const m = en.merge(sel_).sort((a, b) => (a.ghost - b.ghost) || SEV_RANK[a.sev] - SEV_RANK[b.sev] || (a.id === sel) - (b.id === sel));
     m.attr('class', d => `mk ${d.sev}${d.ghost ? ' ghost' : ''}${sel === d.id ? ' sel' : ''}`).attr('aria-label', d => d.e.title);
-    m.select('.core').attr('r', d => d.sev === 'critical' ? 7 : d.sev === 'high' ? 6 : 5).attr('fill', d => d.ghost ? 'transparent' : SEV_COLOR[d.sev]).attr('stroke', d => d.ghost ? SEV_COLOR[d.sev] : '#0b0e12').attr('stroke-width', d => d.ghost ? 2 : 1.5);
+    m.select('.core').attr('r', d => d.sev === 'critical' ? 7 : d.sev === 'high' ? 6 : 5).attr('fill', d => d.ghost ? 'transparent' : SEV_COLOR[d.sev]).style('stroke', d => d.ghost ? SEV_COLOR[d.sev] : 'var(--bg)').attr('stroke-width', d => d.ghost ? 2 : 1.5);
     m.select('.halo').attr('stroke', d => SEV_COLOR[d.sev]).attr('r', 6);
     m.select('.ring').attr('stroke', d => sel === d.id ? '#fff' : 'none').attr('fill', 'none');
     this.rescale();

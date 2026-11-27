@@ -16,7 +16,7 @@ Site statique (GitHub Pages) sans étape de build : ES modules natifs, biblioth�
 - Format d'échange `liveworld.batch/v1` : toute évolution doit être répercutée dans `templates/liveworld-batch.schema.json`, `templates/INSTRUCTIONS_CLAUDE.md`, `js/config.js` et `js/model.js`.
 - Un import ne doit jamais effacer de données : fusion additive, historique conservé.
 - Jamais d'événement affiché sans source datée.
-- Interface en français, thème sombre unique.
+- Interface en français. Deux modes d’affichage (sombre, clair, ou « Système ») : toutes les couleurs passent par les variables CSS de `:root` et `:root[data-mode=light]` (ajouter les deux variantes pour toute nouvelle couleur).
 
 ## Commandes
 - Local : `python3 -m http.server 8000`

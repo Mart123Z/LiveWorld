@@ -1,6 +1,6 @@
 // Rendu des blocs libres produits par Claude (aucun HTML brut n'est accepté)
-import { esc, md, extLink, safeUrl, fmtDay } from './util.js?v=202611261039';
-import { CONF } from './config.js?v=202611261039';
+import { esc, md, extLink, safeUrl, fmtDay } from './util.js?v=202611272136';
+import { CONF } from './config.js?v=202611272136';
 
 const PROB = { low: 'Probabilité faible', medium: 'Probabilité moyenne', high: 'Probabilité élevée' };
 const TREND = { up: '▲', down: '▼', flat: '▬' };
@@ -66,8 +66,8 @@ let mermaidReady = null;
 function loadMermaid() {
   if (mermaidReady) return mermaidReady;
   mermaidReady = new Promise((res, rej) => {
-    const s = document.createElement('script'); s.src = 'vendor/mermaid.min.js?v=202611261039';
-    s.onload = () => { window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme: 'dark', flowchart: { useMaxWidth: false }, timeline: { useMaxWidth: false }, mindmap: { useMaxWidth: false }, fontFamily: 'Inter, system-ui, sans-serif', themeVariables: { background: '#12171d', primaryColor: '#1a2027', primaryTextColor: '#e6ebf0', lineColor: '#8a96a3', primaryBorderColor: '#2ec5d3' } }); res(window.mermaid); };
+    const s = document.createElement('script'); s.src = 'vendor/mermaid.min.js?v=202611272136';
+    s.onload = () => res(window.mermaid);
     s.onerror = rej; document.head.appendChild(s);
   });
   return mermaidReady;
@@ -76,6 +76,10 @@ export async function hydrate(root) {
   const boxes = [...root.querySelectorAll('.mermaid-box:not([data-done])')];
   if (!boxes.length) return;
   let m; try { m = await loadMermaid(); } catch { return; }
+  // Couleurs des diagrammes selon le mode d'affichage (sombre ou clair)
+  const light = document.documentElement.dataset.mode === 'light';
+  m.initialize({ startOnLoad: false, securityLevel: 'strict', theme: light ? 'default' : 'dark', flowchart: { useMaxWidth: false }, timeline: { useMaxWidth: false }, mindmap: { useMaxWidth: false }, fontFamily: 'Inter, system-ui, sans-serif',
+    themeVariables: light ? { background: '#ffffff', primaryColor: '#eef1f5', primaryTextColor: '#121820', lineColor: '#5a6573', primaryBorderColor: '#0e9aab' } : { background: '#12171d', primaryColor: '#1a2027', primaryTextColor: '#e6ebf0', lineColor: '#8a96a3', primaryBorderColor: '#2ec5d3' } });
   for (const box of boxes) {
     box.dataset.done = '1';
     const code = box.querySelector('.mermaid-src').textContent;

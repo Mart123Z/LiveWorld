@@ -1,7 +1,7 @@
 // Exports : contexte pour Claude, résumé lisible, sauvegarde complète, prompt du jour
-import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, LINK_TYPES, DIR, ASSETS, BACKUP_SCHEMA } from './config.js?v=202611261039';
-import { liveEvents, lastActivity, liveLinks, currentImpacts, chainOf, snapshot } from './model.js?v=202611261039';
-import { today, fmtLong, dayOf, ts, mdText, fmtNum, addDays } from './util.js?v=202611261039';
+import { THEMES, THEME_LABEL, SEV, SEV_RANK, STATUS, LINK_TYPES, DIR, ASSETS, BACKUP_SCHEMA } from './config.js?v=202611272136';
+import { liveEvents, lastActivity, liveLinks, currentImpacts, chainOf, snapshot } from './model.js?v=202611272136';
+import { today, fmtLong, dayOf, ts, mdText, fmtNum, addDays } from './util.js?v=202611272136';
 
 export function scopeRange(scope) {
   if (scope.kind === 'month') return { from: scope.month + '-01', to: addDays(nextMonth(scope.month) + '-01', -1), label: new Date(scope.month + '-15').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) };

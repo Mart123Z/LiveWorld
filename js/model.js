@@ -1,6 +1,6 @@
 // Modèle : états dans le temps, chaînes de causalité, validation et fusion des lots
-import { SCHEMA, SEV, SEV_RANK, STATUS, THEME_LABEL, LINK_TYPES, DIR } from './config.js?v=202611261039';
-import { dayOf, ts, addDays, diffDays, safeUrl, normUrl, hash, tokens, jaccard, norm, parseDate } from './util.js?v=202611261039';
+import { SCHEMA, SEV, SEV_RANK, STATUS, THEME_LABEL, LINK_TYPES, DIR } from './config.js?v=202611272136';
+import { dayOf, ts, addDays, diffDays, safeUrl, normUrl, hash, tokens, jaccard, norm, parseDate } from './util.js?v=202611272136';
 
 const ID_RE = /^evt-\d{8}-[a-z0-9]+(-[a-z0-9]+)*$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
